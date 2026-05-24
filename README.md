@@ -6,12 +6,12 @@
 **DistPCA** is a distributed C++ framework for tera-scale genomic Principal Component Analysis (PCA), designed to scale across both single- and multi-node HPC clusters. It employs a hybrid multi-level parallelism scheme combining **MPI**, **OpenMP**, **SIMD** vectorization, and **double buffering** across all three stages of the PCA pipeline (I/O, Preprocessing, Numerical Method). Evaluated on datasets reaching up to 11 TB, DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above 82% and preserving the accuracy of the recovered principal components. For a detailed description of the framework and experimental evaluation, please refer to our [preprint](https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1).
 
 ## Table of Contents
-- [Prerequisites & Installation](#️-prerequisites--installation)
-- [Usage](#-usage)
-- [Datasets](#️-datasets)
-- [Results](#-results)
-- [Reproducibility](#-reproducibility)
-- [Citation](#-citation)
+- [Prerequisites & Installation](#prerequisites--installation)
+- [Usage](#usage)
+- [Datasets](#datasets)
+- [Results](#results)
+- [Reproducibility](#reproducibility)
+- [Citation](#citation)
 
 ## Prerequisites & Installation
 
@@ -143,6 +143,14 @@ Run:
 ./GeneticDataSimulator -npop [int] -nregions [int] -nindividuals [int] -nSNP [int] -minfreq [double] -txtoutput [int] -filename [char]
 ```
 
+The three synthetic datasets used in this work are:
+
+| Dataset | Individuals | SNPs |
+|---|---|---|
+| 50K Genomes | 50,000 | 6,000,000 |
+| 500K Genomes | 500,000 | 3,000,000 |
+| 1M Genomes | 1,000,000 | 1,000,000 |
+
 Two output files are generated: `output_file.map` (SNP information) and `output_file.ped` (individual genotypes).
 
 > [!WARNING]
@@ -200,8 +208,39 @@ These speedups are achieved while preserving the accuracy in the recovered princ
 
 ## Reproducibility
 
-TBD
+### Reproducing the Figures
 
+All precomputed results from our runs are available under `docs/results/`. To reproduce the figures directly from these results:
+
+```bash
+cd scripts/plots/
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python Fig1.py  # Wall-Clock Time
+python Fig2.py  # Strong Scaling Speedup
+python Fig3.py  # Eigenvector Relative Error
+python Fig4.py  # Population Structure (PC1 vs PC2)
+```
+
+### Reproducing the Experiments
+
+To reproduce the experiments from scratch, first follow the [Datasets](#️-datasets) section to download and preprocess the real-world datasets and generate the synthetic ones. Once ready, move the `.bed`, `.bim`, and `.fam` files for each dataset under `scripts/experiments/` and run:
+
+```bash
+mv <dataset>.bed <dataset>.bim <dataset>.fam scripts/experiments/
+
+cd scripts/experiments/
+bash run_1000G.sh
+bash run_SGDP.sh
+bash run_HGDP.sh
+bash run_50K.sh
+bash run_500K.sh
+bash run_1M.sh
+```
+
+> [!NOTE]
+> Experiments were conducted on the ARIS supercomputer using four thin compute nodes. Runtime and results may vary depending on the cluster configuration, available nodes, and storage system.
 ## Citation
 
 If you find DistPCA useful for your research, please cite:
