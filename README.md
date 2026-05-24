@@ -164,11 +164,25 @@ DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-c
 
 **Wall-Clock Time**
 
-<img src="docs/figures/Fig1.png"/>
+<!-- <img src="docs/figures/Fig1.png"/> -->
+<p align="center">
+  <picture>
+    <source srcset = "docs/figures/Fig1.png" media = "(prefers-color-scheme: dark)">
+    <source srcset = "docs/figures/Fig1_light.png" media = "(prefers-color-scheme: light)">
+    <img src = "docs/figures/Fig1.png" width = "100%" alt = "Runtime performance across datasets">
+  </picture>
+</p>
 
 **Strong Scaling Speedup**
 
-<img src="docs/figures/Fig2.png" width="480" height="288"/>
+<!-- <img src="docs/figures/Fig2.png" width="480" height="288"/> -->
+<p align="center">
+  <picture>
+    <source srcset = "docs/figures/Fig2.png" media = "(prefers-color-scheme: dark)">
+    <source srcset = "docs/figures/Fig2_light.png" media = "(prefers-color-scheme: light)">
+    <img src = "docs/figures/Fig2.png" width = "100%" alt = "Speedup across datasets">
+  </picture>
+</p>
 
 These speedups are achieved while preserving the accuracy in the recovered principal components as depicted in the following plots — **left**: entry-wise relative error of the 10 leading eigenvectors against full-rank SVD on the 1000 Genomes dataset, **right**: projection of individuals on the top two principal components (PC1, PC2) colored by population (AFR, AMR, EAS, EUR, SAS), demonstrating clear population clustering consistent with known stratification patterns.
 
