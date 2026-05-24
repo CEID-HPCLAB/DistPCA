@@ -150,6 +150,18 @@ Two output files are generated: `output_file.map` (SNP information) and `output_
 
 ## 📊 Results
 
+All experiments were conducted on the **ARIS supercomputer**, a national Greek HPC cluster facility, using four thin compute nodes. Each node is equipped with a dual-socket AMD EPYC 7742 CPU (128 cores, 2.25 GHz), 512 GB of RAM, and high-performance storage through IBM's GPFS. MPI ranks were distributed across NUMA domains, with OpenMP threads pinned to cores within each domain to improve memory locality. Hyperthreading was disabled, available physical memory per node was restricted to 64 GB, and the number of OpenMP threads per rank was fixed to 8 throughout all experiments. MKL routines were accessed via Intel oneAPI (v2025.0.1).
+
+DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**. SGDP and HGDP are omitted as both datasets complete in under 5 seconds even with a single MPI rank.
+
+**Wall-Clock Time**
+
+<img src="docs/figures/Fig2.png"/>
+
+**Strong Scaling Speedup**
+
+<img src="docs/figures/Fig1.png"/>
+
 ## 🔬 Reproducibility
 
 ## 📄 Citation
