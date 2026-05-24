@@ -5,6 +5,14 @@
 
 **DistPCA** is a distributed C++ framework for tera-scale genomic Principal Component Analysis (PCA), designed to scale across both single- and multi-node HPC clusters. It employs a hybrid multi-level parallelism scheme combining **MPI**, **OpenMP**, **SIMD** vectorization, and **double buffering** across all three stages of the PCA pipeline (I/O, Preprocessing, Numerical Method). Evaluated on datasets reaching up to 11 TB, DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above 82% and preserving the accuracy of the recovered principal components.
 
+## Table of Contents
+- [Prerequisites & Installation](#️-prerequisites--installation)
+- [Usage](#-usage)
+- [Datasets](#️-datasets)
+- [Results](#-results)
+- [Reproducibility](#-reproducibility)
+- [Citation](#-citation)
+
 ## ⚙️ Prerequisites & Installation
 
 Clone the repository:
@@ -29,6 +37,37 @@ make clean  # remove build artifacts (if you want to re-build)
 ```
 
 The executable will be available at `build/TeraPCA_MPI.exe`.
+
+## 🚀 Usage
+
+> [!NOTE]
+> Before running, make sure the Intel oneAPI environment is initialized with `source /opt/intel/oneapi/setvars.sh`
+
+Set the number of OpenMP threads:
+```bash
+export OMP_NUM_THREADS=8
+```
+
+Run DistPCA from the build directory:
+```bash
+mpirun -np <num_processes> ./build/TeraPCA_MPI.exe \
+  -bfile <file_path> \
+  -nsv 10 \
+  -nrhs 20 \
+  -blockPower_conv_crit 2 \
+  -toll 1e-3 \
+  -rfetched 5
+```
+
+| Parameter | Description |
+|---|---|
+| `num_processes` | Number of MPI processes |
+| `file_path` | Path to the `.bed` file (e.g., `../example/ToyHapmap`) |
+| `-nsv` | Number of principal components |
+| `-nrhs` | Size of the subspace (default: `2 * nsv`) |
+| `-blockPower_conv_crit` | Convergence criterion (`2` = MEV) |
+| `-toll` | Convergence tolerance |
+| `-rfetched` | Block size (number of SNPs per block) |
 
 ## 🗂️ Datasets
 
@@ -106,39 +145,12 @@ Run:
 
 Two output files are generated: `output_file.map` (SNP information) and `output_file.ped` (individual genotypes).
 
-## 🚀 Usage
+> [!WARNING]
+> Generating large datasets (e.g. 1M Individuals × 1M SNPs) requires significant disk space. It is recommended to generate data in parts and merge them into `.bed` format via PLINK, rather than producing a single large `.ped` file.
 
-> **Note:** Before running, make sure the Intel oneAPI environment is initialized:
-> ```bash
-> source /opt/intel/oneapi/setvars.sh
-> ```
+## 📊 Results
 
-Set the number of OpenMP threads:
-```bash
-export OMP_NUM_THREADS=8
-```
-
-Run DistPCA from the build directory:
-```bash
-cd build/
-mpirun -np <num_processes> ./build/TeraPCA_MPI.exe \
-  -bfile <file_path> \
-  -nsv 10 \
-  -nrhs 20 \
-  -blockPower_conv_crit 2 \
-  -toll 1e-3 \
-  -rfetched 5
-```
-
-| Parameter | Description |
-|---|---|
-| `num_processes` | Number of MPI processes |
-| `file_path` | Path to the `.bed` file (e.g., `../example/ToyHapmap`) |
-| `-nsv` | Number of principal components |
-| `-nrhs` | Size of the subspace (default: `2 * nsv`) |
-| `-blockPower_conv_crit` | Convergence criterion (`2` = MEV) |
-| `-toll` | Convergence tolerance |
-| `-rfetched` | Block size (number of SNPs per block) |
+## 🔬 Reproducibility
 
 ## 📄 Citation
 
