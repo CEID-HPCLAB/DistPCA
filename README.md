@@ -2,3 +2,121 @@
 
 ![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=flat&logo=c%2B%2B&logoColor=white)
 ![Distributed Computing](https://img.shields.io/badge/Distributed%20Computing-E91E8C?style=flat&logo=apachehadoop&logoColor=white)
+
+**DistPCA** is a distributed C++ framework for tera-scale genomic Principal Component Analysis (PCA), designed to scale across both single- and multi-node HPC clusters. It employs a hybrid multi-level parallelism scheme combining **MPI**, **OpenMP**, **SIMD** vectorization, and **double buffering** across all three stages of the PCA pipeline (I/O, Preprocessing, Numerical Method). Evaluated on datasets reaching up to 11 TB, DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above 82% and preserving the accuracy of the recovered principal components.
+
+## ⚙️ Prerequisites & Installation
+
+Clone the repository:
+```bash
+git clone https://github.com/CEID-HPCLAB/DistPCA.git
+cd DistPCA
+```
+
+Install **Intel MKL** (Base Toolkit) and **Intel MPI + OpenMP** (HPC Toolkit), which provides the `mpicxx` and `mpicc` wrappers:
+```bash
+wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+sudo apt update
+sudo apt install intel-basekit intel-hpckit
+```
+
+Then initialize the environment and build:
+```bash
+source /opt/intel/oneapi/setvars.sh
+make        # compile
+make clean  # remove build artifacts (if you want to re-build)
+```
+
+The executable will be available at `build/TeraPCA_MPI.exe`.
+
+## 🗂️ Datasets
+
+The datasets used in this research consist of three real-world and three synthetic datasets. Real-world datasets require preprocessing with [PLINK](https://www.cog-genomics.org/plink/), which can be installed as follows:
+
+```bash
+wget https://s3.amazonaws.com/plink1-assets/plink_linux_x86_64_20231211.zip
+unzip plink_linux_x86_64_20231211.zip
+sudo mv plink /usr/local/bin/
+```
+
+---
+
+### Real-World Datasets
+
+**1000 Genomes**
+```bash
+# Download from figshare
+wget https://figshare.com/articles/dataset/1000_genomes_phase_3_files_with_SNPs_in_common_with_HapMap3/9208979
+unzip 1000G_phase3_common_SNPs.zip
+unzip 1000G_phase3_common_norel.zip
+
+# Population ancestry panel (for coloring)
+wget https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/integrated_call_samples_v3.20130502.ALL.panel
+
+# Preprocess
+plink --bfile 1000G_phase3_common_norel --maf 0.01 --make-bed --out 1000G.qc
+plink --bfile 1000G.qc --indep-pairwise 1000 50 0.2 --out 1000G.qc.prune
+plink --bfile 1000G.qc --extract 1000G.qc.prune.prune.in --make-bed --out 1000G.qc.pruned
+```
+
+**Simons Genome Diversity Project (SGDP)**
+```bash
+# Download from Reich Lab
+wget https://sharehost.hms.harvard.edu/genetics/reich_lab/sgdp/variant_set/cteam_extended.v4.maf0.1perc.bed
+wget https://sharehost.hms.harvard.edu/genetics/reich_lab/sgdp/variant_set/cteam_extended.v4.maf0.1perc.bim.zip
+unzip cteam_extended.v4.maf0.1perc.bim.zip
+wget https://sharehost.hms.harvard.edu/genetics/reich_lab/sgdp/variant_set/cteam_extended.v4.maf0.1perc.fam
+
+# Preprocess
+plink --bfile sgdp --maf 0.01 --make-bed --out sgdp.qc
+plink --bfile sgdp.qc --indep-pairwise 1000 50 0.2 --out sgdp.qc.prune
+plink --bfile sgdp.qc --extract sgdp.qc.prune.prune.in --make-bed --out sgdp.qc.pruned
+```
+
+**Human Genome Diversity Project (HGDP)**
+```bash
+# Download from Reich Lab
+wget -c https://reichdata.hms.harvard.edu/pub/datasets/humanOrigins/Harvard_HGDP-CEPH.tgz
+tar -xvzf Harvard_HGDP-CEPH.tgz
+
+# Preprocess
+plink --file all_snp --make-bed --out hgdp
+plink --bfile hgdp --maf 0.01 --make-bed --out hgdp.qc
+plink --bfile hgdp.qc --indep-pairwise 1000 50 0.2 --out hgdp.qc.prune
+plink --bfile hgdp.qc --extract hgdp.qc.prune.prune.in --make-bed --out hgdp.qc.pruned
+```
+
+---
+
+### Synthetic Datasets
+
+Synthetic datasets are generated using [DataSimulator](https://github.com/eugeniamaria/DataSimulator). Install dependencies and build:
+
+```bash
+sudo apt-get install libboost-all-dev libgsl-dev
+git clone https://github.com/eugeniamaria/DataSimulator.git
+cd DataSimulator && make
+```
+
+Run:
+```bash
+./GeneticDataSimulator -npop [int] -nregions [int] -nindividuals [int] -nSNP [int] -minfreq [double] -txtoutput [int] -filename [char]
+```
+
+Two output files are generated: `output_file.map` (SNP information) and `output_file.ped` (individual genotypes).
+
+## 📄 Citation
+
+If you find DistPCA useful for your research, please cite:
+
+```bibtex
+@article{mermigkis2026distpca,
+  title     = {DistPCA: Tera-Scale Genomic PCA via Out-of-Core Distributed Parallelism},
+  author    = {Mermigkis, Georgios and Sofotasios, Argiris and Kontopoulou, Eugenia-Maria and Gallopoulos, Efstratios and Hadjidoukas, Panagiotis},
+  journal   = {bioRxiv},
+  year      = {2026},
+  doi       = {10.64898/2026.05.15.725487},
+  url       = {https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1}
+}
+```

@@ -372,7 +372,7 @@ int main(int argc, char **argv){
       MAT = (double*) malloc(malloc_size);
 
       if (MAT == NULL) {
-        printf("Rank %d: MAT malloc failed (size: %llu bytes)\n", rank, malloc_size);
+        printf("Rank %d: MAT malloc failed (size: %lu bytes)\n", rank, malloc_size);
         MPI_Finalize();
         exit(1);
       }

@@ -16,7 +16,7 @@ MKL_LIBROOT = $(MKL_ROOT)/lib/intel64
 MKL_INCROOT = $(MKL_ROOT)/include
 
 # Use mpicxx for MPI support
-COMP = mpicxx -mkl -Wall -mavx2 -mfma -march=native
+COMP = mpicxx -mkl -mavx2 -mfma -march=native
 CCOMP = mpicc
 CFLAGS = -O3 -std=c++11 -mavx2 -mfma -march=native -I$(MKL_INCROOT) -DUSE_MPI
 CFLAGS_C = -O3 -fPIE -I$(MKL_INCROOT) -DUSE_MPI
@@ -34,6 +34,8 @@ OBJECTS = $(CPP_OBJECTS) $(C_OBJECTS)
 # Create build directory before building
 $(EXE): $(BUILD_DIR) $(OBJECTS)
 	$(COMP) $(OBJECTS) -o $@ $(MKL_LIB)
+	@echo ""
+	@echo "Build successful! Executable: $@"
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
@@ -46,7 +48,6 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
 
 clean:
 	rm -rf $(BUILD_DIR)
-
 
 # ARM64 architecture with OpenBLAS and OpenMP
 else ifeq ($(ARCH),arm64)
@@ -66,8 +67,8 @@ MPI_LIB = $(MPI_ROOT)/lib
 
 COMP = mpicxx
 CCOMP = mpicc
-CFLAGS = -Wall -O3 -std=c++11 -I$(OPENBLAS_INC) -I$(OPENMP_INC) -I$(MPI_INC) -Xpreprocessor -fopenmp -DUSE_MPI
-CFLAGS_C = -Wall -O3 -I$(OPENBLAS_INC) -I$(OPENMP_INC) -I$(MPI_INC) -Xpreprocessor -fopenmp -DUSE_MPI
+CFLAGS = -O3 -std=c++11 -I$(OPENBLAS_INC) -I$(OPENMP_INC) -I$(MPI_INC) -Xpreprocessor -fopenmp -DUSE_MPI
+CFLAGS_C = -O3 -I$(OPENBLAS_INC) -I$(OPENMP_INC) -I$(MPI_INC) -Xpreprocessor -fopenmp -DUSE_MPI
 LDFLAGS = -L$(OPENBLAS_LIB) -lopenblas -L$(OPENMP_LIB) -lomp -L$(MPI_LIB) -lmpi -lpthread -lm
 
 CPP_SOURCES = $(SRC_DIR)/terapca.cpp $(SRC_DIR)/utilities.cpp $(SRC_DIR)/methods.cpp
