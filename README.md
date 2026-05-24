@@ -3,7 +3,7 @@
 ![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=flat&logo=c%2B%2B&logoColor=white)
 ![Distributed Computing](https://img.shields.io/badge/Distributed%20Computing-E91E8C?style=flat&logo=apachehadoop&logoColor=white)
 
-**DistPCA** is a distributed C++ framework for tera-scale genomic Principal Component Analysis (PCA), designed to scale across both single- and multi-node HPC clusters. It employs a hybrid multi-level parallelism scheme combining **MPI**, **OpenMP**, **SIMD** vectorization, and **double buffering** across all three stages of the PCA pipeline (I/O, Preprocessing, Numerical Method). Evaluated on datasets reaching up to 11 TB, DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above 82% and preserving the accuracy of the recovered principal components.
+**DistPCA** is a distributed C++ framework for tera-scale genomic Principal Component Analysis (PCA), designed to scale across both single- and multi-node HPC clusters. It employs a hybrid multi-level parallelism scheme combining **MPI**, **OpenMP**, **SIMD** vectorization, and **double buffering** across all three stages of the PCA pipeline (I/O, Preprocessing, Numerical Method). Evaluated on datasets reaching up to 11 TB, DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above 82% and preserving the accuracy of the recovered principal components. For a detailed description of the framework and experimental evaluation, please refer to our [preprint](https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1).
 
 ## Table of Contents
 - [Prerequisites & Installation](#️-prerequisites--installation)
@@ -148,19 +148,17 @@ Two output files are generated: `output_file.map` (SNP information) and `output_
 > [!WARNING]
 > Generating large datasets (e.g. 1M Individuals × 1M SNPs) requires significant disk space. It is recommended to generate data in parts and merge them into `.bed` format via PLINK, rather than producing a single large `.ped` file.
 
-## 📊 Results
+## Results
 
-All experiments were conducted on the **ARIS supercomputer**, a national Greek HPC cluster facility, using four thin compute nodes.
+All experiments were conducted on the **ARIS supercomputer**, a national Greek HPC cluster facility, using four thin compute nodes. Each thin node is configured as follows:
 
 | Spec | Details |
 |---|---|
 | **CPU** | Dual-socket AMD EPYC 7742 (128 cores, 2.25 GHz) |
 | **RAM** | 512 GB (restricted to 64 GB per node for all experiments) |
 | **Storage** | IBM GPFS (high-performance parallel filesystem) |
-| **MPI** | Ranks distributed across NUMA domains |
-| **OpenMP** | Threads pinned to cores within each NUMA domain, fixed to 8 per rank |
-| **Hyperthreading** | Disabled |
-| **MKL** | Intel oneAPI v2025.0.1 |
+
+MPI ranks were distributed across NUMA domains, with OpenMP threads pinned to cores within each domain and fixed to 8 per rank throughout all experiments. Hyperthreading was disabled and MKL routines were accessed via Intel oneAPI (v2025.0.1).
 
 DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**. SGDP and HGDP are omitted as both datasets complete in under 5 seconds even with a single MPI rank.
 
@@ -170,9 +168,19 @@ DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-c
 
 **Strong Scaling Speedup**
 
-<img src="docs/figures/Fig2.png" width="700" height="420"/>
+<img src="docs/figures/Fig2.png" width="600" height="360"/>
+
+These speedups are achieved while preserving the accuracy in the recovered principal components as depicted in the following plots — **left**: entry-wise relative error of the 10 leading eigenvectors against full-rank SVD on the 1000 Genomes dataset, **right**: projection of individuals on the top two principal components (PC1, PC2) colored by population (AFR, AMR, EAS, EUR, SAS), demonstrating clear population clustering consistent with known stratification patterns.
+
+<p align="center">
+  <img src="docs/figures/Fig3.png" width="45%"/>
+  &nbsp;&nbsp;
+  <img src="docs/figures/Fig4.png" width="45%"/>
+</p>
 
 ## Reproducibility
+
+TBD
 
 ## Citation
 
