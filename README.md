@@ -164,7 +164,6 @@ DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-c
 
 **Wall-Clock Time**
 
-<!-- <img src="docs/figures/Fig1.png"/> -->
 <p align="center">
   <picture>
     <source srcset = "docs/figures/Fig1_light.png" media = "(prefers-color-scheme: dark)">
@@ -175,21 +174,28 @@ DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-c
 
 **Strong Scaling Speedup**
 
-<!-- <img src="docs/figures/Fig2.png" width="480" height="288"/> -->
 <p align="center">
   <picture>
-    <source srcset = "docs/figures/Fig2_light.png" media = "(prefers-color-scheme: dark)">
-    <source srcset = "docs/figures/Fig2.png" media = "(prefers-color-scheme: light)">
-    <img src = "docs/figures/Fig2.png" width = "100%" alt = "Speedup across datasets">
+    <source srcset = "docs/figures/Fig2_light.png" width="480" height="288" media = "(prefers-color-scheme: dark)">
+    <source srcset = "docs/figures/Fig2.png" width="480" height="288" media = "(prefers-color-scheme: light)">
+    <img src = "docs/figures/Fig2.png" width="480" height="288" alt = "Speedup across datasets">
   </picture>
 </p>
 
 These speedups are achieved while preserving the accuracy in the recovered principal components as depicted in the following plots — **left**: entry-wise relative error of the 10 leading eigenvectors against full-rank SVD on the 1000 Genomes dataset, **right**: projection of individuals on the top two principal components (PC1, PC2) colored by population (AFR, AMR, EAS, EUR, SAS), demonstrating clear population clustering consistent with known stratification patterns.
 
 <p align="center">
-  <img src="docs/figures/Fig3.png" width="45%"/>
+  <picture>
+    <source srcset="docs/figures/Fig3_light.png" media="(prefers-color-scheme: light)">
+    <source srcset="docs/figures/Fig3.png" media="(prefers-color-scheme: dark)">
+    <img src="docs/figures/Fig3.png" width="45%"/>
+  </picture>
   &nbsp;&nbsp;
-  <img src="docs/figures/Fig4.png" width="45%"/>
+  <picture>
+    <source srcset="docs/figures/Fig4_light.png" media="(prefers-color-scheme: light)">
+    <source srcset="docs/figures/Fig4.png" media="(prefers-color-scheme: dark)">
+    <img src="docs/figures/Fig4.png" width="45%"/>
+  </picture>
 </p>
 
 ## Reproducibility
