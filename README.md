@@ -192,7 +192,7 @@ These speedups are achieved while preserving the accuracy in the recovered princ
   </picture>
   &nbsp;&nbsp;
   <picture>
-    <source srcset="docs/figures/Fig4_light.png" media="(prefers-color-scheme: darj)">
+    <source srcset="docs/figures/Fig4_light.png" media="(prefers-color-scheme: dark)">
     <source srcset="docs/figures/Fig4.png" media="(prefers-color-scheme: light)">
     <img src="docs/figures/Fig4.png" width="45%"/>
   </picture>
