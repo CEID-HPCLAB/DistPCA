@@ -1,7 +1,6 @@
 # 🧬 DistPCA: Tera-Scale Genomic PCA via Out-of-Core Distributed Parallelism
 
 ![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=flat&logo=c%2B%2B&logoColor=white)
-![HPC](https://img.shields.io/badge/HPC-1DB954?style=flat&logo=superuser&logoColor=white)
 ![Distributed Computing](https://img.shields.io/badge/Distributed%20Computing-E91E8C?style=flat&logo=apachehadoop&logoColor=white)
 
 **DistPCA** is a distributed C++ framework for tera-scale genomic Principal Component Analysis (PCA), designed to scale across both single- and multi-node HPC clusters. It employs a hybrid multi-level parallelism scheme combining **MPI**, **OpenMP**, **SIMD** vectorization, and **double buffering** across all three stages of the PCA pipeline (I/O, Preprocessing, Numerical Method). Evaluated on datasets reaching up to 11 TB, DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above 82% and preserving the accuracy of the recovered principal components. For a detailed description of the framework and experimental evaluation, please refer to our [preprint](https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1).
