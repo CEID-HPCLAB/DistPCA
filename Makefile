@@ -23,9 +23,9 @@ CFLAGS_C = -O3 -fPIE -I$(MKL_INCROOT) -DUSE_MPI
 
 MKL_LIB = -Wl,--start-group $(MKL_LIBROOT)/libmkl_intel_lp64.a $(MKL_LIBROOT)/libmkl_intel_thread.a $(MKL_LIBROOT)/libmkl_core.a -Wl,--end-group -liomp5 -lpthread -lm -ldl
 
-CPP_SOURCES = $(SRC_DIR)/terapca.cpp $(SRC_DIR)/utilities.cpp $(SRC_DIR)/methods.cpp
+CPP_SOURCES = $(SRC_DIR)/distpca.cpp $(SRC_DIR)/utilities.cpp $(SRC_DIR)/methods.cpp
 C_SOURCES = $(SRC_DIR)/gaussian.c $(SRC_DIR)/gennorm.c $(SRC_DIR)/io.c
-EXE = $(BUILD_DIR)/TeraPCA_MPI.exe
+EXE = $(BUILD_DIR)/DistPCA.exe
 
 CPP_OBJECTS = $(CPP_SOURCES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 C_OBJECTS = $(C_SOURCES:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
@@ -71,9 +71,9 @@ CFLAGS = -O3 -std=c++11 -I$(OPENBLAS_INC) -I$(OPENMP_INC) -I$(MPI_INC) -Xpreproc
 CFLAGS_C = -O3 -I$(OPENBLAS_INC) -I$(OPENMP_INC) -I$(MPI_INC) -Xpreprocessor -fopenmp -DUSE_MPI
 LDFLAGS = -L$(OPENBLAS_LIB) -lopenblas -L$(OPENMP_LIB) -lomp -L$(MPI_LIB) -lmpi -lpthread -lm
 
-CPP_SOURCES = $(SRC_DIR)/terapca.cpp $(SRC_DIR)/utilities.cpp $(SRC_DIR)/methods.cpp
+CPP_SOURCES = $(SRC_DIR)/distpca.cpp $(SRC_DIR)/utilities.cpp $(SRC_DIR)/methods.cpp
 C_SOURCES = $(SRC_DIR)/gaussian.c $(SRC_DIR)/gennorm.c $(SRC_DIR)/io.c
-EXE = $(BUILD_DIR)/TeraPCA_MPI.exe
+EXE = $(BUILD_DIR)/DistPCA.exe
 
 CPP_OBJECTS = $(CPP_SOURCES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 C_OBJECTS = $(C_SOURCES:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)

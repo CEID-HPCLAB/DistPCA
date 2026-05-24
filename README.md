@@ -36,7 +36,7 @@ make        # compile
 make clean  # remove build artifacts (if you want to re-build)
 ```
 
-The executable will be available at `build/TeraPCA_MPI.exe`.
+The executable will be available at `build/DistPCA.exe`.
 
 ## Usage
 
@@ -50,7 +50,7 @@ export OMP_NUM_THREADS=8
 
 Run DistPCA from the build directory:
 ```bash
-mpirun -np <num_processes> ./build/TeraPCA_MPI.exe \
+mpirun -np <num_processes> ./build/DistPCA.exe \
   -bfile <file_path> \
   -nsv 10 \
   -nrhs 20 \
