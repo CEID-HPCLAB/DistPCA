@@ -168,7 +168,7 @@ DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-c
 
 **Strong Scaling Speedup**
 
-<img src="docs/figures/Fig2.png" width="600" height="360"/>
+<img src="docs/figures/Fig2.png" width="480" height="288"/>
 
 These speedups are achieved while preserving the accuracy in the recovered principal components as depicted in the following plots — **left**: entry-wise relative error of the 10 leading eigenvectors against full-rank SVD on the 1000 Genomes dataset, **right**: projection of individuals on the top two principal components (PC1, PC2) colored by population (AFR, AMR, EAS, EUR, SAS), demonstrating clear population clustering consistent with known stratification patterns.
 
