@@ -106,6 +106,40 @@ Run:
 
 Two output files are generated: `output_file.map` (SNP information) and `output_file.ped` (individual genotypes).
 
+## 🚀 Usage
+
+> **Note:** Before running, make sure the Intel oneAPI environment is initialized:
+> ```bash
+> source /opt/intel/oneapi/setvars.sh
+> ```
+
+Set the number of OpenMP threads:
+```bash
+export OMP_NUM_THREADS=8
+```
+
+Run DistPCA from the build directory:
+```bash
+cd build/
+mpirun -np <num_processes> ./build/TeraPCA_MPI.exe \
+  -bfile <file_path> \
+  -nsv 10 \
+  -nrhs 20 \
+  -blockPower_conv_crit 2 \
+  -toll 1e-3 \
+  -rfetched 5
+```
+
+| Parameter | Description |
+|---|---|
+| `num_processes` | Number of MPI processes |
+| `file_path` | Path to the `.bed` file (e.g., `../example/ToyHapmap`) |
+| `-nsv` | Number of principal components |
+| `-nrhs` | Size of the subspace (default: `2 * nsv`) |
+| `-blockPower_conv_crit` | Convergence criterion (`2` = MEV) |
+| `-toll` | Convergence tolerance |
+| `-rfetched` | Block size (number of SNPs per block) |
+
 ## 📄 Citation
 
 If you find DistPCA useful for your research, please cite:
