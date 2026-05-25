@@ -237,7 +237,7 @@ These performance gains are achieved while preserving the accuracy of the recove
 
 ### Regenerating the figures
 
-All precomputed results from our experiments are available under docs/results/. To regenerate the figures directly from these outputs:
+All precomputed results from our experiments are available under `docs/results/`. To regenerate the figures directly from these outputs:
 
 ```bash
 cd scripts/plots/
@@ -269,7 +269,7 @@ bash run_1M.sh
 ```
 
 > [!NOTE]
-> Experiments were conducted on the [ARIS supercomputer](https://doc.aris.grnet.gr/system/hardware/) using four thin compute nodes. Wall-clock time results may vary slightly depending on cluster configuration, node availability, and storage system.
+> Experiments were conducted on the [ARIS supercomputer](https://doc.aris.grnet.gr/system/hardware/) using four thin compute nodes. Wall-clock time results may exhibit slight variations depending on cluster configuration, node availability, and storage system.
 
 ## File Structure
 ```
