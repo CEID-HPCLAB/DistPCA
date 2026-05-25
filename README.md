@@ -244,11 +244,11 @@ cd scripts/plots/
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-python3 Fig1.py  # Runtime performance
-python3 Fig2.py  # Strong scaling speedup
-python3 Fig3.py  # Parallel efficiency
-python3 Fig4.py  # Eigenvector entry-wise relative Error
-python3 Fig5.py  # Population structure (PC1 vs PC2)
+python3 runtime.py          # Runtime performance (Figure 3 in the paper)
+python3 speedup.py          # Strong scaling speedup (Figure 4 in the paper)
+python3 par_efficiency.py   # Parallel efficiency
+python3 rel_error.py        # Entry-wise relative error of eigenvectors (Figure 5 in the paper)
+python3 pop_structure.py    # Population structure (PC1 vs PC2) (Figure 6 in the paper)
 ``` 
 
 ### Reproducing the reported results
@@ -256,7 +256,7 @@ python3 Fig5.py  # Population structure (PC1 vs PC2)
 To reproduce the experiments from scratch, first follow the [Datasets](#datasets) section to download and preprocess the real-world datasets and generate the synthetic ones. Once ready, move the `.bed`, `.bim`, and `.fam` files for each dataset under `scripts/experiments/` and run:
 
 ```bash
-# Move dataset files
+# Move dataset files to scripts/experiments/
 mv <dataset>.bed <dataset>.bim <dataset>.fam scripts/experiments/
 
 cd scripts/experiments/
@@ -269,7 +269,7 @@ bash run_1M.sh
 ```
 
 > [!NOTE]
-> Experiments were conducted on the ARIS supercomputer using four thin compute nodes. Performance results may vary slightly depending on cluster configuration, node availability, and storage system.
+> Experiments were conducted on the [ARIS supercomputer](https://doc.aris.grnet.gr/system/hardware/) using four thin compute nodes. Wall-clock time results may vary slightly depending on cluster configuration, node availability, and storage system.
 
 ## File Structure
 ```
@@ -280,11 +280,10 @@ DistPCA/
 │
 ├── scripts/
 │   ├── plots/              # Scripts to reproduce all figures
-│   │
 │   └── experiments/        # Scripts for running all experiments
 │
 ├── src/                    # Core implementation of DistPCA
-├── example/                # Minimal working example demonstrating usage
+├── example/                # Toy dataset for testing and demonstration
 │
 ├── Makefile
 ```
