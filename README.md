@@ -194,27 +194,30 @@ MPI ranks were distributed across NUMA domains, with OpenMP threads pinned to co
 
 ### Results
 
-DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** across all evaluated scenarios. SGDP and HGDP are omitted as both datasets complete in under 5 seconds even with a single MPI rank.
+DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** across all evaluated scenarios. As shown in the figures, the SGDP and HGDP datasets are omitted, as they complete in under 5 seconds even with a single MPI rank.
 
-**Wall-Clock Time**
-
+<br>
 <p align="center">
   <picture>
     <source srcset = "docs/figures/Fig1_light.png" media = "(prefers-color-scheme: dark)">
     <source srcset = "docs/figures/Fig1.png" media = "(prefers-color-scheme: light)">
-    <img src = "docs/figures/Fig1.png" width = "100%" alt = "Runtime performance across datasets">
+    <img src = "docs/figures/Fig1_light.png" width = "95%" alt = "Runtime Performance of DistPCA across four distinct datasets">
   </picture>
+  <br>
+  <em>Figure 1: Runtime performance</em>
 </p>
 
-**Strong Scaling Speedup**
-
+<br>
 <p align="center">
   <picture>
-    <source srcset = "docs/figures/Fig2_light.png" width="480" height="288" media = "(prefers-color-scheme: dark)">
-    <source srcset = "docs/figures/Fig2.png" width="480" height="288" media = "(prefers-color-scheme: light)">
-    <img src = "docs/figures/Fig2.png" width="480" height="288" alt = "Speedup across datasets">
+    <source srcset = "docs/figures/Fig2_light.png" media = "(prefers-color-scheme: dark)">
+    <source srcset = "docs/figures/Fig2.png" media = "(prefers-color-scheme: light)">
+    <img src = "docs/figures/Fig2_light.png" width = "95%" alt = "Strong scaling speedup (left) and parallel efficiency (right)">
   </picture>
+  <br>
+  <em>Figure 2: Strong scaling speedup (left) and parallel efficiency (right)</em>
 </p>
+
 
 These speedups are achieved while preserving the accuracy in the recovered principal components as depicted in the following plots — **left**: entry-wise relative error of the 10 leading eigenvectors against full-rank SVD on the 1000 Genomes dataset, **right**: projection of individuals on the top two principal components (PC1, PC2) colored by population (AFR, AMR, EAS, EUR, SAS), demonstrating clear population clustering consistent with known stratification patterns.
 
