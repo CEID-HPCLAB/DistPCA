@@ -11,9 +11,10 @@
 - [Prerequisites & Installation](#prerequisites--installation)
 - [Usage](#usage)
 - [Datasets](#datasets)
-- [Results](#results)
+- [Performance Evaluation](#performance-evaluation)
 - [Reproducibility](#reproducibility)
 - [Citation](#citation)
+- [Acknowledgments](#acknowledgments)
 
 ## Prerequisites & Installation
 
@@ -94,6 +95,16 @@ sudo mv plink /usr/local/bin/
 
 ### Real-World Datasets
 
+The three real-world datasets used in this work are the [1000 Genomes Project](https://www.nature.com/articles/nature15393), the [Simons Genome Diversity Project (SGDP)](https://www.nature.com/articles/nature18964), and the [Human Genome Diversity Project (HGDP)](https://pubmed.ncbi.nlm.nih.gov/15803201/). Their dimensions after preprocessing are summarized below, together with the commands required for downloading and preprocessing each dataset.
+
+
+| Dataset | Individuals | SNPs |
+|:-------:|:-----------:|:-----:|
+| 1000 Genomes | 2,490 | 1,664,505 |
+| SGDP | 345 | 694,659 |
+| HGDP | 942 | 133,594 |
+
+
 **1000 Genomes**
 ```bash
 # Download from figshare
@@ -141,6 +152,14 @@ plink --bfile hgdp.qc --extract hgdp.qc.prune.prune.in --make-bed --out hgdp.qc.
 
 ### Synthetic Datasets
 
+The three synthetic datasets used in this work are:
+
+| Dataset | Individuals | SNPs |
+|:-------:|:-----------:|:-----:|
+| 50K Genomes | 50,000 | 6,000,000 |
+| 500K Genomes | 500,000 | 3,000,000 |
+| 1M Genomes | 1,000,000 | 1,000,000 |
+
 Synthetic datasets are generated using [DataSimulator](https://github.com/eugeniamaria/DataSimulator). Install dependencies and build:
 
 ```bash
@@ -154,32 +173,28 @@ Run:
 ./GeneticDataSimulator -npop [int] -nregions [int] -nindividuals [int] -nSNP [int] -minfreq [double] -txtoutput [int] -filename [char]
 ```
 
-The three synthetic datasets used in this work are:
-
-| Dataset | Individuals | SNPs |
-|---|---|---|
-| 50K Genomes | 50,000 | 6,000,000 |
-| 500K Genomes | 500,000 | 3,000,000 |
-| 1M Genomes | 1,000,000 | 1,000,000 |
-
 Two output files are generated: `output_file.map` (SNP information) and `output_file.ped` (individual genotypes).
 
 > [!WARNING]
 > Generating large datasets (e.g. 1M Individuals × 1M SNPs) requires significant disk space. It is recommended to generate data in parts and merge them into `.bed` format via PLINK, rather than producing a single large `.ped` file.
 
-## Results
+## Performance Evaluation
 
-All experiments were conducted on the **ARIS supercomputer**, a national Greek HPC cluster facility, using four thin compute nodes. Each thin node is configured as follows:
+### Experimental Setup
 
-| Spec | Details |
-|---|---|
+All experiments were conducted on the [**ARIS supercomputer**](https://doc.aris.grnet.gr/system/hardware/), a national Greek HPC cluster facility, using four thin compute nodes. Each thin node is partitioned into eight Non-Uniform Memory Access (NUMA) domains and is configured as follows:
+
+| Component| Details |
+|:---:|:---:|
 | **CPU** | Dual-socket AMD EPYC 7742 (128 cores, 2.25 GHz) |
 | **RAM** | 512 GB (restricted to 64 GB per node for all experiments) |
-| **Storage** | IBM GPFS (high-performance parallel filesystem) |
+| **Filesystem** | GPFS |
 
-MPI ranks were distributed across NUMA domains, with OpenMP threads pinned to cores within each domain and fixed to 8 per rank throughout all experiments. Hyperthreading was disabled and MKL routines were accessed via Intel oneAPI (v2025.0.1).
+MPI ranks were distributed across NUMA domains, with OpenMP threads pinned to cores within each domain and fixed to **8** per rank throughout all experiments. Hyperthreading was disabled and MKL routines were accessed via `Intel oneAPI (v2025.0.1)`.
 
-DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**. SGDP and HGDP are omitted as both datasets complete in under 5 seconds even with a single MPI rank.
+### Results
+
+DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** across all evaluated scenarios. SGDP and HGDP are omitted as both datasets complete in under 5 seconds even with a single MPI rank.
 
 **Wall-Clock Time**
 
@@ -267,3 +282,6 @@ If you find DistPCA useful for your research, please cite:
   url       = {https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1}
 }
 ```
+
+## Acknowledgments
+This work was supported by computational time granted from the National Infrastructures for Research and Technology S.A. (GRNET S.A.) in the National HPC facility - ARIS - under project ID pa260203distpca.
