@@ -14,6 +14,7 @@
 - [Datasets](#datasets)
 - [Performance Evaluation](#performance-evaluation)
 - [Reproducibility](#reproducibility)
+- [File Structure](#file-structure)
 - [Citation](#citation)
 - [Acknowledgments](#acknowledgments)
 
@@ -229,31 +230,33 @@ These performance gains are achieved while preserving the accuracy of the recove
     <img src = "docs/figures/Fig3_light.png" width = "90%" alt = "Strong scaling speedup (left) and parallel efficiency (right)">
   </picture>
   <br>
-  <em>Figure 3<br><b>Left</b>: Entry-wise relative error of the 10 leading eigenvectors computed by DistPCA for the <b>1000 Genomes</b> dataset, compared to the eigenvectors returned by the full-rank SVD.<br><b>Right</b>: Projection of the samples of the <b>1000 Genomes</b> dataset on the top two left singular vectors, as computed by DistPCA. Samples are grouped into five populations: AFR, AMR, EAS, EUR, and SAS. </em>
+  <em>Figure 3<br><b>Left</b>: Entry-wise relative error of the 10 leading eigenvectors computed by DistPCA for the <b>1000 Genomes</b> dataset, compared to the eigenvectors returned by the full-rank SVD<br><b>Right</b>: Projection of the samples of the <b>1000 Genomes</b> dataset on the top two left singular vectors, as computed by DistPCA. Samples are grouped into five populations: AFR, AMR, EAS, EUR, and SAS</em>
 </p>
 
 ## Reproducibility
 
-### Reproducing the Figures
+### Regenerating the figures
 
-All precomputed results from our runs are available under `docs/results/`. To reproduce the figures directly from these results:
+All precomputed results from our experiments are available under docs/results/. To regenerate the figures directly from these outputs:
 
 ```bash
 cd scripts/plots/
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-python Fig1.py  # Wall-Clock Time
-python Fig2.py  # Strong Scaling Speedup
-python Fig3.py  # Eigenvector Relative Error
-python Fig4.py  # Population Structure (PC1 vs PC2)
-```
+python3 Fig1.py  # Runtime performance
+python3 Fig2.py  # Strong scaling speedup
+python3 Fig3.py  # Parallel efficiency
+python3 Fig4.py  # Eigenvector entry-wise relative Error
+python3 Fig5.py  # Population structure (PC1 vs PC2)
+``` 
 
-### Reproducing the Experiments
+### Reproducing the reported results
 
 To reproduce the experiments from scratch, first follow the [Datasets](#datasets) section to download and preprocess the real-world datasets and generate the synthetic ones. Once ready, move the `.bed`, `.bim`, and `.fam` files for each dataset under `scripts/experiments/` and run:
 
 ```bash
+# Move dataset files
 mv <dataset>.bed <dataset>.bim <dataset>.fam scripts/experiments/
 
 cd scripts/experiments/
@@ -266,7 +269,25 @@ bash run_1M.sh
 ```
 
 > [!NOTE]
-> Experiments were conducted on the ARIS supercomputer using four thin compute nodes. Runtime and results may vary depending on the cluster configuration, available nodes, and storage system.
+> Experiments were conducted on the ARIS supercomputer using four thin compute nodes. Performance results may vary slightly depending on cluster configuration, node availability, and storage system.
+
+## File Structure
+```
+DistPCA/
+├── docs/
+│   ├── figures/            # Generated figures for the paper
+│   └── results/            # Precomputed experimental results
+│
+├── scripts/
+│   ├── plots/              # Scripts to reproduce all figures
+│   │
+│   └── experiments/        # Scripts for running all experiments
+│
+├── src/                    # Core implementation of DistPCA
+├── example/                # Minimal working example demonstrating usage
+│
+├── Makefile
+```
 
 ## Citation
 
