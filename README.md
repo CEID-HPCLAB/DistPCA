@@ -1,9 +1,11 @@
 # 🧬 DistPCA: Tera-Scale Genomic PCA via Out-of-Core Distributed Parallelism
 
+![Bioinformatics](https://img.shields.io/badge/Bioinformatics-32CD32?style=flat&logo=dna&logoColor=white)
 ![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=flat&logo=c%2B%2B&logoColor=white)
 ![Distributed Computing](https://img.shields.io/badge/Distributed%20Computing-E91E8C?style=flat&logo=apachehadoop&logoColor=white)
+![MPI](https://img.shields.io/badge/MPI-EB5C0C?style=flat&logo=dna&logoColor=white)
 
-**DistPCA** is a distributed C++ framework for tera-scale genomic Principal Component Analysis (PCA), designed to scale across both single- and multi-node HPC clusters. It employs a hybrid multi-level parallelism scheme combining **MPI**, **OpenMP**, **SIMD** vectorization, and **double buffering** across all three stages of the PCA pipeline (I/O, Preprocessing, Numerical Method). Evaluated on datasets reaching up to 11 TB, DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above 82% and preserving the accuracy of the recovered principal components. For a detailed description of the framework and experimental evaluation, please refer to our [preprint](https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1).
+**DistPCA** is a distributed out-of-core C++ framework for tera-scale genomic Principal Component Analysis (PCA), designed to scale across both single- and multi-node computing systems. Built on top of MPI, it employs a hybrid multi-level parallelism scheme combining **multiprocessing**, **OpenMP multithreading**, **SIMD vectorization**, and **double buffering** across all three stages of the PCA pipeline (I/O, data preprocessing, numerical method). Evaluated on datasets reaching up to 11 TB, DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** and preserving the accuracy of the recovered principal components. For a detailed description of the framework and experimental evaluation, please refer to our [preprint](https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1).
 
 ## Table of Contents
 - [Prerequisites & Installation](#prerequisites--installation)
@@ -41,33 +43,42 @@ The executable will be available at `build/DistPCA.exe`.
 ## Usage
 
 > [!NOTE]
-> Before running, make sure the Intel oneAPI environment is initialized with `source /opt/intel/oneapi/setvars.sh`
+> Before running `DistPCA`, make sure the Intel oneAPI environment is initialized with `source /opt/intel/oneapi/setvars.sh`
 
-Set the number of OpenMP threads:
+Set the number of **OpenMP threads** to be used per MPI process:
 ```bash
-export OMP_NUM_THREADS=8
+export OMP_NUM_THREADS=<num_threads>
 ```
 
-Run DistPCA from the build directory:
+Once compiled, run `DistPCA` from the build directory:
 ```bash
 mpirun -np <num_processes> ./build/DistPCA.exe \
   -bfile <file_path> \
-  -nsv 10 \
-  -nrhs 20 \
-  -blockPower_conv_crit 2 \
-  -toll 1e-3 \
-  -rfetched 5
+  -nsv <nsv> \
+  -nrhs <nrhs> \
+  -power <num_power_iterations> \
+  -blockPower_conv_crit <convergence_criterion> \
+  -toll 1e-3 <convergence_tolerance> \
+  -rfetched <block_size> \
+  -blockPower_maxiter <max_iterations> \
+  -filewrite <save_output>
 ```
 
 | Parameter | Description |
 |---|---|
-| `num_processes` | Number of MPI processes |
-| `file_path` | Path to the `.bed` file (e.g., `../example/ToyHapmap`) |
-| `-nsv` | Number of principal components |
-| `-nrhs` | Size of the subspace (default: `2 * nsv`) |
-| `-blockPower_conv_crit` | Convergence criterion (`2` = MEV) |
-| `-toll` | Convergence tolerance |
-| `-rfetched` | Block size (number of SNPs per block) |
+| `-np` | Number of MPI processes (**Mandatory**) |
+| `-bfile` | Path to the input `.bed` dataset file (e.g., `../example/ToyHapmap`) (**Mandatory**) |
+| `-nsv` | Number of sought principal components (Default: `10`) |
+| `-nrhs` | Dimension of the target subspace (Default: `2 * nsv`) |
+| `-power` | Number of power iterations to perform (Default: `1`) |
+| `-blockPower_conv_crit` | Convergence criterion (Default: `2`)  |
+| `-toll` | Convergence tolerance (Default: `1e-3`) |
+| `-rfetched` | Total number of SNPs per block (Default: `100`) |
+| `-blockPower_maxiter` | Number of maximum iterations to run if convergence criterion is taking longer to achieve (Default: `100`) |
+| `-filewrite` | Boolean flag. If set to `1`, stores the singular values and singular vectors. (Default: `0`).
+
+> [!NOTE]
+> `DistPCA` supports three convergence criteria. The first is the trace-based criterion, which monitors the relative change of the total explained variance (trace) between successive iterations. The second is the individual eigenvalue criterion, which checks the relative change of each singular value and requires all components to satisfy the specified tolerance. The third is the Mean Explained Variance (MEV) criterion, which assesses subspace convergence by measuring the average squared cosine similarity between successive eigenvector estimates. By default, the MEV criterion is used.
 
 ## Datasets
 
@@ -93,7 +104,7 @@ unzip 1000G_phase3_common_norel.zip
 # Population ancestry panel (for coloring)
 wget https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/integrated_call_samples_v3.20130502.ALL.panel
 
-# Preprocess
+# Preprocessing
 plink --bfile 1000G_phase3_common_norel --maf 0.01 --make-bed --out 1000G.qc
 plink --bfile 1000G.qc --indep-pairwise 1000 50 0.2 --out 1000G.qc.prune
 plink --bfile 1000G.qc --extract 1000G.qc.prune.prune.in --make-bed --out 1000G.qc.pruned
@@ -107,7 +118,7 @@ wget https://sharehost.hms.harvard.edu/genetics/reich_lab/sgdp/variant_set/cteam
 unzip cteam_extended.v4.maf0.1perc.bim.zip
 wget https://sharehost.hms.harvard.edu/genetics/reich_lab/sgdp/variant_set/cteam_extended.v4.maf0.1perc.fam
 
-# Preprocess
+# Preprocessing
 plink --bfile sgdp --maf 0.01 --make-bed --out sgdp.qc
 plink --bfile sgdp.qc --indep-pairwise 1000 50 0.2 --out sgdp.qc.prune
 plink --bfile sgdp.qc --extract sgdp.qc.prune.prune.in --make-bed --out sgdp.qc.pruned
@@ -119,7 +130,7 @@ plink --bfile sgdp.qc --extract sgdp.qc.prune.prune.in --make-bed --out sgdp.qc.
 wget -c https://reichdata.hms.harvard.edu/pub/datasets/humanOrigins/Harvard_HGDP-CEPH.tgz
 tar -xvzf Harvard_HGDP-CEPH.tgz
 
-# Preprocess
+# Preprocessing
 plink --file all_snp --make-bed --out hgdp
 plink --bfile hgdp --maf 0.01 --make-bed --out hgdp.qc
 plink --bfile hgdp.qc --indep-pairwise 1000 50 0.2 --out hgdp.qc.prune
