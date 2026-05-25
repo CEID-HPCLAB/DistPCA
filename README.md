@@ -1,9 +1,10 @@
 # 🧬 DistPCA: Tera-Scale Genomic PCA via Out-of-Core Distributed Parallelism
 
-![Bioinformatics](https://img.shields.io/badge/Bioinformatics-32CD32?style=flat&logo=dna&logoColor=white)
 ![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=flat&logo=c%2B%2B&logoColor=white)
+![HPC](https://img.shields.io/badge/HPC-71797E?style=flat&logo=dna&logoColor=white)
 ![Distributed Computing](https://img.shields.io/badge/Distributed%20Computing-E91E8C?style=flat&logo=apachehadoop&logoColor=white)
-![MPI](https://img.shields.io/badge/MPI-EB5C0C?style=flat&logo=dna&logoColor=white)
+![Bioinformatics](https://img.shields.io/badge/Bioinformatics-228B22?style=flat&logo=dna&logoColor=white)
+
 
 **DistPCA** is a distributed out-of-core C++ framework for tera-scale genomic Principal Component Analysis (PCA), designed to scale across both single- and multi-node computing systems. Built on top of MPI, it employs a hybrid multi-level parallelism scheme combining **multiprocessing**, **OpenMP multithreading**, **SIMD vectorization**, and **double buffering** across all three stages of the PCA pipeline (I/O, data preprocessing, numerical method). Evaluated on datasets reaching up to 11 TB, DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** and preserving the accuracy of the recovered principal components. For a detailed description of the framework and experimental evaluation, please refer to our [preprint](https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1).
 
@@ -212,27 +213,23 @@ DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2
   <picture>
     <source srcset = "docs/figures/Fig2_light.png" media = "(prefers-color-scheme: dark)">
     <source srcset = "docs/figures/Fig2.png" media = "(prefers-color-scheme: light)">
-    <img src = "docs/figures/Fig2_light.png" width = "95%" alt = "Strong scaling speedup (left) and parallel efficiency (right)">
+    <img src = "docs/figures/Fig2_light.png" width = "90%" alt = "Strong scaling speedup (left) and parallel efficiency (right)">
   </picture>
   <br>
   <em>Figure 2: Strong scaling speedup (left) and parallel efficiency (right)</em>
 </p>
 
 
-These speedups are achieved while preserving the accuracy in the recovered principal components as depicted in the following plots — **left**: entry-wise relative error of the 10 leading eigenvectors against full-rank SVD on the 1000 Genomes dataset, **right**: projection of individuals on the top two principal components (PC1, PC2) colored by population (AFR, AMR, EAS, EUR, SAS), demonstrating clear population clustering consistent with known stratification patterns.
+These performance gains are achieved while preserving the accuracy of the recovered principal components, as shown in the following plots.
 
 <p align="center">
   <picture>
-    <source srcset="docs/figures/Fig3_light.png" media="(prefers-color-scheme: dark)">
-    <source srcset="docs/figures/Fig3.png" media="(prefers-color-scheme: light)">
-    <img src="docs/figures/Fig3.png" width="45%"/>
+    <source srcset = "docs/figures/Fig3_light.png" media = "(prefers-color-scheme: dark)">
+    <source srcset = "docs/figures/Fig3.png" media = "(prefers-color-scheme: light)">
+    <img src = "docs/figures/Fig3_light.png" width = "90%" alt = "Strong scaling speedup (left) and parallel efficiency (right)">
   </picture>
-  &nbsp;&nbsp;
-  <picture>
-    <source srcset="docs/figures/Fig4_light.png" media="(prefers-color-scheme: dark)">
-    <source srcset="docs/figures/Fig4.png" media="(prefers-color-scheme: light)">
-    <img src="docs/figures/Fig4.png" width="45%"/>
-  </picture>
+  <br>
+  <em>Figure 3<br><b>Left</b>: Entry-wise relative error of the 10 leading eigenvectors computed by DistPCA for the <b>1000 Genomes</b> dataset, compared to the eigenvectors returned by the full-rank SVD.<br><b>Right</b>: Projection of the samples of the <b>1000 Genomes</b> dataset on the top two left singular vectors, as computed by DistPCA. Samples are grouped into five populations: AFR, AMR, EAS, EUR, and SAS. </em>
 </p>
 
 ## Reproducibility
