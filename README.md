@@ -290,22 +290,21 @@ bash run_1M.sh
 >
 > **1. Save the approximate singular vectors**
 > In `scripts/experiments/run_1000G.sh`, add `-fwrite 1` to the `mpirun` command. This will produce two output files:
-> - `<dataset>_singularValues.txt`
-> - `<dataset>_singularVectors.txt`
+> - `noprefix_singularValues.txt`
+> - `noprefix_singularVectors.txt`
 >
 > **2. Compute the full SVD reference**
 > Add `-fullSVD 1` to the same script (only valid for single-rank runs where the dataset fits in RAM). This produces the ground truth:
-> - `<dataset>_realLeftSingularVectors.txt`
+> - `noprefix_realLeftSingularVectors.txt`
 >
 > **3. Update the plot scripts**
 > Once both runs are complete, update the file paths in the plotting scripts:
-> - `scripts/plots/pop_structure.py` → set `PC_FILE_PATH` to `<dataset>_singularVectors.txt`
-> - `scripts/plots/rel_error.py` → set `APPROX_SINGULAR_VECTORS_PATH` to `<dataset>_singularVectors.txt`
-> - `scripts/plots/rel_error.py` → set `TRUE_SINGULAR_VECTORS_PATH` to `<dataset>_realLeftSingularVectors.txt`
+> - `scripts/plots/pop_structure.py` → set `PC_FILE_PATH` to `noprefix_singularVectors.txt`
+> - `scripts/plots/rel_error.py` → set `APPROX_SINGULAR_VECTORS_PATH` to `noprefix_singularVectors.txt`
+> - `scripts/plots/rel_error.py` → set `TRUE_SINGULAR_VECTORS_PATH` to `noprefix_realLeftSingularVectors.txt`
 >
 > Then re-run the corresponding plot scripts as described above.
 
-> Then re-run the corresponding plot scripts as described above.
 > [!WARNING]
 > Experiments were conducted on the [ARIS supercomputer](https://www.hpc.grnet.gr/en/) using four thin compute nodes. Wall-clock time results may exhibit slight variations depending on cluster infrastructure, node availability, and storage system.
 
