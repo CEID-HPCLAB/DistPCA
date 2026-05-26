@@ -2,12 +2,33 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.lines import Line2D
 
-workers = np.array([1, 2, 4, 8, 12, 16, 24, 32, 48, 64])
+GENOMES_1000_PATH = "../../docs/results/runtime/1000_genomes.txt"
+GENOMES_50K_PATH  = "../../docs/results/runtime/50K_genomes.txt"
+GENOMES_500K_PATH = "../../docs/results/runtime/500K_genomes.txt"
+GENOMES_1M_PATH   = "../../docs/results/runtime/1M_genomes.txt"
 
-genomes_1000 =  np.array([356.7407945, 178.3993832, 92.95216167, 47.18473489, 31.16004802, 23.48908567, 16.37145399, 12.43822264, 8.997754257, 6.510368676])
-genomes_50K =  np.array([110020.5023 * 1.9983, 110020.5023, 55154.07626, 27970.82618, 18651.04972, 14180.5183, 9587.767641, 7084.838065, 4913.973162, 3777.552357])
-genomes_500K    =  np.array([33297.95211 * 1.99987, 33297.95211, 16678.12446, 8412.132026, 5637.877179, 4317.972034, 2949.662772, 2182.929662, 1452.335722, 1097.604851])
-genomes_1M     =  np.array([37689.17871 * 1.9973, 37689.17871, 18836.35089, 9436.06865, 6295.296339, 4814.640775, 3208.694778, 2396.712454, 1610.854153, 1205.178123])
+def load_dataset(path):
+    workers, times = [], []
+
+    with open(path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+
+            parts = line.split("|")
+            mpi = int(parts[0].split(":")[1].strip())
+            t = float(parts[1].split(":")[1].strip().split()[0])
+
+            workers.append(mpi)
+            times.append(t)
+
+    return np.array(workers), np.array(times)
+
+workers, genomes_1000 = load_dataset(GENOMES_1000_PATH)
+_, genomes_50K = load_dataset(GENOMES_50K_PATH)
+_, genomes_500K = load_dataset(GENOMES_500K_PATH)
+_, genomes_1M = load_dataset(GENOMES_1M_PATH)
 
 datasets = [genomes_1000, genomes_50K, genomes_500K, genomes_1M]
 labels = ["1000 Genomes", "50K Genomes", "500K Genomes", "1M Genomes"]

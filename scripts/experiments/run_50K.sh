@@ -9,12 +9,12 @@ NSV=20
 NRHS=40
 CONV_CRIT=2
 TOLL=1e-3
-RFETCHED=100
+BLOCKSIZE=100
 
 mpirun -np ${NP} ../../build/DistPCA.exe \
   -bfile ${BFILE} \
   -nsv ${NSV} \
   -nrhs ${NRHS} \
-  -conv_crit ${CONV_CRIT} \
+  -crit ${CONV_CRIT} \
   -toll ${TOLL} \
-  -rfetched ${RFETCHED}
+  -bsize ${BLOCKSIZE}

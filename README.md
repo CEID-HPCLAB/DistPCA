@@ -7,7 +7,7 @@
 ![Bioinformatics](https://img.shields.io/badge/Bioinformatics-228B22?style=flat&logo=dna&logoColor=white)
 
 
-**DistPCA** is a distributed out-of-core C++ framework for tera-scale genomic Principal Component Analysis (PCA), designed to scale across both single- and multi-node computing systems. Built on top of MPI, it employs a hybrid multi-level parallelism scheme combining **multiprocessing**, **OpenMP multithreading**, **SIMD vectorization**, and **double buffering** across all three stages of the PCA pipeline (I/O, data preprocessing, numerical method). Evaluated on datasets reaching up to 11 TB, DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** and preserving the accuracy of the recovered principal components. For a detailed description of the framework and experimental evaluation, please refer to our [preprint](https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1).
+**DistPCA** is a distributed out-of-core C++ framework for tera-scale genomic Principal Component Analysis (PCA), designed to scale across both single- and multi-node computing systems. Built on top of MPI, it employs a hybrid multi-level parallelism scheme combining **multiprocessing**, **OpenMP multithreading**, **SIMD vectorization**, and **double buffering** across all three stages of the PCA pipeline (I/O, data preprocessing, numerical method). Evaluated on datasets reaching up to 11 TB, DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** and preserving the accuracy of the recovered principal components (PCs). For a detailed description of the framework and experimental evaluation, please refer to our [preprint](https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1).
 
 ## Table of Contents
 - [Prerequisites & Installation](#prerequisites--installation)
@@ -46,7 +46,7 @@ The executable will be available at `build/DistPCA.exe`.
 
 ## Usage
 
-> [!NOTE]
+> [!IMPORTANT]
 > Before running `DistPCA`, make sure the Intel oneAPI environment is initialized with `source /opt/intel/oneapi/setvars.sh`
 
 Set the number of **OpenMP threads** to be used per MPI process:
@@ -61,28 +61,35 @@ mpirun -np <num_processes> ./build/DistPCA.exe \
   -nsv <nsv> \
   -nrhs <nrhs> \
   -power <num_power_iterations> \
-  -blockPower_conv_crit <convergence_criterion> \
-  -toll 1e-3 <convergence_tolerance> \
-  -rfetched <block_size> \
-  -blockPower_maxiter <max_iterations> \
-  -filewrite <save_output>
+  -crit <convergence_criterion> \
+  -toll <convergence_tolerance> \
+  -bsize <block_size> \
+  -miter <max_iterations> \
+  -verbose <verbose> \
+  -fwrite <save_output> \
+  -fullSVD <full_svd>
 ```
 
-| Parameter | Description |
-|---|---|
+| Parameter   | Description |
+|------------|-------------|
 | `-np` | Number of MPI processes (**Mandatory**) |
 | `-bfile` | Path to the input `.bed` dataset file (e.g., `../example/ToyHapmap`) (**Mandatory**) |
 | `-nsv` | Number of sought principal components (Default: `10`) |
 | `-nrhs` | Dimension of the target subspace (Default: `2 * nsv`) |
 | `-power` | Number of power iterations to perform (Default: `1`) |
-| `-blockPower_conv_crit` | Convergence criterion (Default: `2`)  |
+| `-crit` | Convergence criterion (Default: `2`) |
 | `-toll` | Convergence tolerance (Default: `1e-3`) |
-| `-rfetched` | Total number of SNPs per block (Default: `100`) |
-| `-blockPower_maxiter` | Number of maximum iterations to run if convergence criterion is taking longer to achieve (Default: `100`) |
-| `-filewrite` | Boolean flag. If set to `1`, stores the singular values and singular vectors. (Default: `0`).
+| `-bsize` | Total number of SNPs per block (Default: `100`) |
+| `-miter` | Maximum iterations to run if convergence criterion is taking longer to achieve (Default: `100`) |
+| `-verbose` | Logging level. If set to `2`, detailed convergence info is printed (Default: `1`) |
+| `-fwrite` | Boolean flag. If set to `1`, stores the singular values and singular vectors (Default: `0`) |
+| `-fullSVD` | Boolean flag. If set to `1`, computes full SVD using `LAPACKE` (only if dataset fits in RAM) (Default: `0`) |
 
 > [!NOTE]
 > `DistPCA` supports three convergence criteria. The first is the trace-based criterion, which monitors the relative change of the total explained variance (trace) between successive iterations. The second is the individual eigenvalue criterion, which checks the relative change of each singular value and requires all components to satisfy the specified tolerance. The third is the Mean Explained Variance (MEV) criterion, which assesses subspace convergence by measuring the average squared cosine similarity between successive eigenvector estimates. By default, the MEV criterion is used.
+
+> [!NOTE]
+> `DistPCA` supports three MPI-based parallelism schemes for computing the sought PCs. The first scheme, implemented in [SubspaceIteration_MPI](https://github.com/CEID-HPCLAB/DistPCA/blob/main/src/methods.cpp#L26), is an in-core method used when each MPI process can fully load its assigned portion of the dataset into RAM. The second scheme supports out-of-core computation of PCs and uses three levels of parallelism (multiprocessing, OpenMP multithreading, and SIMD vectorization). It is accessible through [BlockSubspaceIter_MPI_OOC](https://github.com/CEID-HPCLAB/DistPCA/blob/main/src/methods.cpp#L331). The third scheme is the full DistPCA implementation presented in the paper and extends the second scheme by additionally supporting compute–transfer overlap using a double-buffering strategy. It is implemented in [BlockSubspaceIter_MPI_OOC_double_buffering](https://github.com/CEID-HPCLAB/DistPCA/blob/main/src/methods.cpp#L760).
 
 ## Datasets
 
@@ -107,8 +114,10 @@ The three real-world datasets used in this work are the [1000 Genomes Project](h
 | SGDP | 345 | 694,659 |
 | HGDP | 942 | 133,594 |
 
+<br>
 
-**1000 Genomes**
+
+| **1000 Genomes** |
 ```bash
 # Download from figshare
 wget https://figshare.com/articles/dataset/1000_genomes_phase_3_files_with_SNPs_in_common_with_HapMap3/9208979
@@ -124,7 +133,7 @@ plink --bfile 1000G.qc --indep-pairwise 1000 50 0.2 --out 1000G.qc.prune
 plink --bfile 1000G.qc --extract 1000G.qc.prune.prune.in --make-bed --out 1000G.qc.pruned
 ```
 
-**Simons Genome Diversity Project (SGDP)**
+| **Simons Genome Diversity Project (SGDP)** |
 ```bash
 # Download from Reich Lab
 wget https://sharehost.hms.harvard.edu/genetics/reich_lab/sgdp/variant_set/cteam_extended.v4.maf0.1perc.bed
@@ -138,7 +147,7 @@ plink --bfile sgdp.qc --indep-pairwise 1000 50 0.2 --out sgdp.qc.prune
 plink --bfile sgdp.qc --extract sgdp.qc.prune.prune.in --make-bed --out sgdp.qc.pruned
 ```
 
-**Human Genome Diversity Project (HGDP)**
+| **Human Genome Diversity Project (HGDP)** |
 ```bash
 # Download from Reich Lab
 wget -c https://reichdata.hms.harvard.edu/pub/datasets/humanOrigins/Harvard_HGDP-CEPH.tgz
@@ -163,6 +172,8 @@ The three synthetic datasets used in this work are:
 | 500K Genomes | 500,000 | 3,000,000 |
 | 1M Genomes | 1,000,000 | 1,000,000 |
 
+<br>
+
 Synthetic datasets are generated using [DataSimulator](https://github.com/eugeniamaria/DataSimulator). Install dependencies and build:
 
 ```bash
@@ -185,7 +196,7 @@ Two output files are generated: `output_file.map` (SNP information) and `output_
 
 ### Experimental Setup
 
-All experiments were conducted on the [**ARIS supercomputer**](https://doc.aris.grnet.gr/system/hardware/), a national Greek HPC cluster facility, using four thin compute nodes. Each thin node is partitioned into eight Non-Uniform Memory Access (NUMA) domains and is configured as follows:
+All experiments were conducted on the [ARIS supercomputer](https://www.hpc.grnet.gr/en/), a national Greek HPC cluster facility, using four thin compute nodes. Each thin node is partitioned into eight Non-Uniform Memory Access (NUMA) domains and is configured as follows:
 
 | Component| Details |
 |:---:|:---:|
@@ -193,11 +204,14 @@ All experiments were conducted on the [**ARIS supercomputer**](https://doc.aris.
 | **RAM** | 512 GB (restricted to 64 GB per node for all experiments) |
 | **Filesystem** | GPFS |
 
-MPI ranks were distributed across NUMA domains, with OpenMP threads pinned to cores within each domain and fixed to **8** per rank throughout all experiments. Hyperthreading was disabled and MKL routines were accessed via `Intel oneAPI (v2025.0.1)`.
+A detailed overview of the ARIS infrastructure is available [here](https://doc.aris.grnet.gr/system/hardware/).
+
+> [!NOTE]
+> MPI ranks were distributed across NUMA domains, with OpenMP threads pinned to cores within each domain and fixed to **8** per rank throughout all experiments. Hyperthreading was disabled and MKL routines were accessed via `Intel oneAPI (v2025.0.1)`.
 
 ### Results
 
-DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** across all evaluated scenarios. As shown in the figures, the SGDP and HGDP datasets are omitted, as they complete in under 5 seconds even with a single MPI rank.
+DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** across all evaluated scenarios. As shown in the figures, the *SGDP* and *HGDP* datasets are omitted, as they complete in under 5 seconds even with a single MPI rank.
 
 <br>
 <p align="center">
@@ -238,13 +252,14 @@ These performance gains are achieved while preserving the accuracy of the recove
 
 ### Regenerating the figures
 
-All precomputed results from our experiments are available under `docs/results/`. To regenerate the figures directly from these outputs:
+All precomputed results from the conducted experiments are available [here](./docs/results/). To regenerate the figures directly from these outputs, run:
 
 ```bash
 cd scripts/plots/
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+
 python3 runtime.py          # Runtime performance (Figure 3 in the paper)
 python3 speedup.py          # Strong scaling speedup (Figure 4 in the paper)
 python3 par_efficiency.py   # Parallel efficiency
@@ -254,13 +269,14 @@ python3 pop_structure.py    # Population structure (PC1 vs PC2) (Figure 6 in the
 
 ### Reproducing the reported results
 
-To reproduce the experiments from scratch, first follow the [Datasets](#datasets) section to download and preprocess the real-world datasets and generate the synthetic ones. Once ready, move the `.bed`, `.bim`, and `.fam` files for each dataset under `scripts/experiments/` and run:
+To reproduce the reported results from scratch, first follow the [Datasets](#datasets) section to download and preprocess the real-world datasets and generate the synthetic ones. Once ready, move the `.bed`, `.bim`, and `.fam` files for each dataset under `scripts/experiments/` and run:
 
 ```bash
 # Move dataset files to scripts/experiments/
 mv <dataset>.bed <dataset>.bim <dataset>.fam scripts/experiments/
 
 cd scripts/experiments/
+
 bash run_1000G.sh
 bash run_SGDP.sh
 bash run_HGDP.sh
@@ -269,8 +285,11 @@ bash run_500K.sh
 bash run_1M.sh
 ```
 
-> [!NOTE]
-> Experiments were conducted on the [ARIS supercomputer](https://doc.aris.grnet.gr/system/hardware/) using four thin compute nodes. Wall-clock time results may exhibit slight variations depending on cluster configuration, node availability, and storage system.
+> [!WARNING]
+> Experiments were conducted on the [ARIS supercomputer](https://www.hpc.grnet.gr/en/) using four thin compute nodes. Wall-clock time results may exhibit slight variations depending on cluster infrastructure, node availability, and storage system.
+
+> [!IMPORTANT]
+> A key parameter of the proposed hybrid multi-level parallelism scheme is the block size used to partition the dataset, as this determines the number of SNPs processed by each MPI rank at a time and, thus, the parallel I/O performance. The optimal size depends on several factors, including dataset size, RAM, I/O bandwidth, Last-Level Cache (LLC), and the number of compute nodes. In practice, the block size parameter should be selected such that the I/O workload generated by the workers matches the storage system’s capabilities (e.g., bandwidth and latency) and maximizes the LLC hit ratio.
 
 ## File Structure
 ```
@@ -278,6 +297,8 @@ DistPCA/
 ├── docs/
 │   ├── figures/            # Generated figures for the paper
 │   └── results/            # Precomputed experimental results
+│       ├── runtime/        # Runtime performance results (Figures 3 and 4 of the paper)
+│       └── accuracy/       # Evaluation results for computed PCs (Figures 5 and 6 of the paper)
 │
 ├── scripts/
 │   ├── plots/              # Scripts to reproduce all figures

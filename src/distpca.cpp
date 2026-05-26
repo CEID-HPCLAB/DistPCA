@@ -77,12 +77,12 @@ int main(int argc, char **argv){
     findarg("bfile",STR, fname, argc, argv);
     findarg("nrhs", INT, &logg.NRHS, argc, argv); findarg("nsv", INT, &logg.NSV, argc, argv);
     findarg("memory", DOUBLE, &logg.mem, argc, argv);
-    findarg("block_size", INT, &logg.rows_fetched, argc, argv);
+    findarg("bsize", INT, &logg.rows_fetched, argc, argv);
     findarg("verbose", INT, &logg.PRINT_INFO, argc, argv);
-    findarg("filewrite", INT, &logg.filewrite, argc, argv);
+    findarg("fwrite", INT, &logg.filewrite, argc, argv);
     findarg("toll", DOUBLE, &logg.toll, argc, argv);
-    findarg("max_iter", INT, &logg.blockPower_maxiter, argc, argv);
-    findarg("conv_crit", INT, &logg.blockPower_conv_crit, argc, argv);
+    findarg("miter", INT, &logg.blockPower_maxiter, argc, argv);
+    findarg("crit", INT, &logg.blockPower_conv_crit, argc, argv);
     findarg("power", INT, &logg.power, argc, argv);
     findarg("fullSVD", INT, &logg.trueSVD, argc, argv);
 

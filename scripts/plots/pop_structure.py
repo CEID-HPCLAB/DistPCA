@@ -1,12 +1,12 @@
 import pandas as pd
 import matplotlib.pyplot as plt
  
-pc_file = "../../docs/results/noprefix_singularVectors.txt"
-panel_file = "../../docs/results/integrated_call_samples_v3.20130502.ALL.panel"
+PC_FILE_PATH = "../../docs/results/accuracy/singular_vectors.txt"
+PANEL_FILE_PATH = "../../docs/results/accuracy/integrated_call_samples_v3.20130502.ALL.panel"
 
-df = pd.read_csv(pc_file, sep = r"\s+", engine = "python")
+df = pd.read_csv(PC_FILE_PATH, sep = r"\s+", engine = "python")
 
-panel = pd.read_csv(panel_file, sep = "\t")[["sample", "super_pop"]]
+panel = pd.read_csv(PANEL_FILE_PATH, sep = "\t")[["sample", "super_pop"]]
 panel.columns = ["FID", "continent"]
 
 df = df.merge(panel, on = "FID", how = "left").dropna(subset = ["continent"])
