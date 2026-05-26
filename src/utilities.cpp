@@ -51,21 +51,11 @@ string toString(int value) {
   s << value;
   return s.str();
 }
-
-void decode_plink(unsigned char * __restrict__ out,
-   const unsigned char * __restrict__ in,
-   const unsigned int n);
-
-void decode_plink_precomp(unsigned char * __restrict__ out,
-   const unsigned char * __restrict__ in,
-   const unsigned int n);
- 
  
 string timestamp(struct logistics *logg);
 
 int GetRamInKB(void)
 {
-    cout << "Getting RAM size..." << endl;
     
 #if defined(__linux__)
     FILE *meminfo = fopen("/proc/meminfo", "r");
@@ -138,26 +128,23 @@ string ConstructFilename(struct logistics logg, string fileType){
 
 void print_statistics(struct logistics logg) {
 
-  printf("===================================================================\n");
-  printf("TeraPCA library, Version: 1.0.\n");
+  printf("----------------------------------------------------------\n");
+  printf("DistPCA software package, Version: 1.0.\n");
   printf( "Current local time and date: %s", asctime (logg.timeinfo) );
-  printf("===================================================================\n");
-  printf("# of threads exploited: %d\n",logg.threads);
+  printf("Total number of threads exploited: %d\n",logg.threads);
   printf("RAM size in KBs: %d\n",logg.ram_KB);
   printf("RAM size in GBs: %lf\n",logg.ram_GB);
-  printf("# of matrix rows: %d\n", logg.M);
-  printf("# of matrix columns: %d\n", logg.N);
-  printf("# of singular pairs sought: %d\n", logg.NSV);
-  printf("# of right-hand sides used: %d\n", logg.NRHS);
+  printf("Total number of matrix rows: %d\n", logg.M);
+  printf("Total number of matrix columns: %d\n", logg.N);
+  printf("Total number of singular pairs sought: %d\n", logg.NSV);
+  printf("Total number of right-hand sides used: %d\n", logg.NRHS);
   printf("Value of power: %d\n", logg.power);
-  printf("# of rows fetched from the disk per block: %d\n", logg.rows_fetched);
+  printf("Total number of rows fetched from the disk per block: %d\n", logg.rows_fetched);
   if (logg.rows_fetched < logg.N) {
     printf("Total number of times which the data matrix was fetched from the memory: %d\n", logg.blockPower_total_its*(logg.power+1));
     printf("Average amount of time elapsed per matrix fetching: %lf\n", logg.TIME_2_LOAD_MATRIX / (logg.blockPower_total_its*(logg.power+1)));
   }
-  printf("===================================================================\n");
-  printf("The following times are listed in seconds!\n");
-  printf("- - - - -\n");
+  printf("\n[The following times are listed in seconds]\n\n");
   printf("Time to generate the right-hand sides matrix: %02.13f\n",logg.TIME_2_GENERATE_RHS);
   printf("Time to load the data matrix: %02.13f\n",logg.TIME_2_LOAD_MATRIX);
   printf("Time to perform the MM products (overall): %02.13f\n",logg.TIME_2_MM);
@@ -165,12 +152,10 @@ void print_statistics(struct logistics logg) {
   printf("Time to perform the MM products (with A^T): %02.13f\n",logg.TIME_2_MM_A_TRANSPOSED);
   printf("Time to perform the orthonormalization: %02.13f\n",logg.TIME_2_GS);
   printf("Time to solve the projection eigenvalue problem: %02.13f\n",logg.TIME_2_PROJECTED_SVD);
-  printf("- - - - -\n");
-  printf("Total wall-clock time elapsed: %02.13f\n",logg.TIME_2_PROJECTED_SVD + logg.TIME_2_GENERATE_RHS + logg.TIME_2_LOAD_MATRIX + logg.TIME_2_MM + logg.TIME_2_GS + logg.TIME_2_OTHER);
+  printf("\nTotal wall-clock time elapsed: %02.13f\n",logg.TIME_2_PROJECTED_SVD + logg.TIME_2_GENERATE_RHS + logg.TIME_2_LOAD_MATRIX + logg.TIME_2_MM + logg.TIME_2_GS + logg.TIME_2_OTHER);
   printf("Total wall-clock time elapsed (without including the amount of time spent on loading the matrix): %02.13f\n",logg.TIME_2_PROJECTED_SVD + logg.TIME_2_GENERATE_RHS + logg.TIME_2_MM + logg.TIME_2_GS + logg.TIME_2_OTHER);
-  printf("===================================================================\n");
-  printf("The following times are listed in hours!\n");
-  printf("- - - - -\n");
+
+  printf("\n[The following times are listed in hours]\n\n");
   printf("Time to generate the right-hand sides matrix: %02.13f\n",logg.TIME_2_GENERATE_RHS/3600);
   printf("Time to load the data matrix: %02.13f\n",logg.TIME_2_LOAD_MATRIX/3600);
   printf("Time to perform the MM products (overall): %02.13f\n",logg.TIME_2_MM/3600);
@@ -178,17 +163,14 @@ void print_statistics(struct logistics logg) {
   printf("Time to perform the MM products (with A^T): %02.13f\n",logg.TIME_2_MM_A_TRANSPOSED/3600);
   printf("Time to perform the orthonormalization: %02.13f\n",logg.TIME_2_GS/3600);
   printf("Time to solve the projection eigenvalue problem: %02.13f\n",logg.TIME_2_PROJECTED_SVD/3600);
-  printf("- - - - -\n");
-  printf("Total wall-clock time elapsed: %02.13f\n",(logg.TIME_2_PROJECTED_SVD + logg.TIME_2_GENERATE_RHS + logg.TIME_2_LOAD_MATRIX + logg.TIME_2_MM + logg.TIME_2_GS + logg.TIME_2_OTHER)/3600);
+  printf("\nTotal wall-clock time elapsed: %02.13f\n",(logg.TIME_2_PROJECTED_SVD + logg.TIME_2_GENERATE_RHS + logg.TIME_2_LOAD_MATRIX + logg.TIME_2_MM + logg.TIME_2_GS + logg.TIME_2_OTHER)/3600);
   printf("Total wall-clock time elapsed (without including the time spent on loading the matrix): %02.13f\n",(logg.TIME_2_PROJECTED_SVD + logg.TIME_2_GENERATE_RHS + logg.TIME_2_MM + logg.TIME_2_GS + logg.TIME_2_OTHER)/3600);
  
   if (logg.rows_fetched == logg.N && logg.trueSVD == 1) {
-    printf("===================================================================\n");
-    printf("Total wall-clock time to compute the full ('econ') SVD: %02.13f\n",logg.TIME_2_TRUE_SVD);
+    printf("\nTotal wall-clock time to compute the full ('econ') SVD: %02.13f\n",logg.TIME_2_TRUE_SVD);
     printf("||Uhat^TU - I||_F: %02.13f\n",logg.frob_norm_angle);
     printf("||Uhat^TU - I||_2: %02.13f\n",logg.cos_error);
   }
-  printf("===================================================================\n");
 
 }
 
@@ -269,232 +251,12 @@ void  computeCosineError(double *MatA, double *MatB, int M, int NSV, double *Cos
   free(SingularValues);
 }
 
-void Read_Bed(std::ifstream &in, double *temp3, struct logistics *logg){
-    int M = logg->M, N = logg->N; double avg, sd;
-    double inv_sqrtN = 1.0 / sqrt((double)N); 
-	//================================================================
-	//  //size of the packed data, in bytes, per SNP
-	//================================================================
-	uint64_t np = (unsigned long long)ceil((double)M/PACK_DENSITY);
-	unsigned char *decbin = new unsigned char[np*PACK_DENSITY];
-        unsigned char *readbin = new unsigned char[np];
-        double *norm_tmp = new double[M];
-	for(unsigned int j = 0; j < N; j++){
-                // read raw genotypes
-                in.read((char*)readbin, sizeof(char)*np);
-                //decode raw genotypes
-                decode_plink(decbin,readbin, np);
-                standardize(norm_tmp, decbin, M, avg, sd, inv_sqrtN);
-		for(unsigned int kk = 0; kk < M; kk++){
-		   double s = norm_tmp[kk];
-		   temp3[j*M + kk] = s;
-		}
-	}
-	delete[] norm_tmp;
-	delete[] decbin;
-	delete[] readbin;
-}
-
-void Read_Bed_Local(std::ifstream &in, double *temp3, struct logistics *logg) {
-    int M = logg->M;
-    int local_N = logg->local_N;
-    int local_N_start = logg->local_N_start;
-    
-    uint64_t np = (uint64_t)ceil((double)M/PACK_DENSITY);
-    unsigned char *decbin = new unsigned char[np*PACK_DENSITY];
-    unsigned char *readbin = new unsigned char[np];
-    double *norm_tmp = new double[M];
-    double inv_sqrtN = 1.0 / sqrt((double)logg->N);
-    
-    // Seek to starting SNP position (3 bytes header + SNP offset)
-    uint64_t snp_offset = 3 + (uint64_t)local_N_start * np;
-    in.seekg(snp_offset, std::ifstream::beg);
-    
-    double avg, sd;
-    for(int j = 0; j < local_N; j++) {
-        in.read((char*)readbin, sizeof(char)*np);
-        decode_plink(decbin, readbin, np);
-        standardize(norm_tmp, decbin, M, avg, sd, inv_sqrtN);
-        
-        for(int k = 0; k < M; k++) {
-            temp3[j*M + k] = norm_tmp[k];
-        }
-    }
-    
-    delete[] norm_tmp;
-    delete[] decbin;
-    delete[] readbin;
-}
-
-void Read_Bed_Blocks(std::ifstream& in, uint64_t np, 
-	uint64_t blk_size, double *temp3, uint64_t startval, 
-	struct logistics *logg, unsigned char *decbin, unsigned char *readbin, 
-	double *norm_tmp, bool *seen_snp, double *norm_precomp){
-	int N = logg->M, M = logg->N; uint64_t idx; 
-	double sd=0, avg=0, s;
-    double inv_sqrtM = 1.0 / sqrt((double)M);
-	for(uint64_t j = 0; j < blk_size; j++){
-		// read raw genotypes
-		in.read((char*)readbin, sizeof(char)*np);
-		idx = startval+j; 
-	    if (!seen_snp[idx]){		
-			//decode raw genotypes
-				decode_plink(decbin,readbin, np);
-			//normalize raw genotypes 
-            standardize(norm_tmp, decbin, N, avg, sd, inv_sqrtM);
-
-			for(unsigned int kk = 0; kk < N; kk++){
-				s = norm_tmp[kk];
-				temp3[j*N + kk] = s;
-			}
-
- 			if(sd > 1e-9){
-				norm_precomp[3+(idx*4)] = (0 - avg)/sd;
-				norm_precomp[2+(idx*4)] = (1 - avg)/sd;
-				norm_precomp[0+(idx*4)] = (2 - avg)/sd;
-				norm_precomp[1+(idx*4)] = 0;
-			}
-			seen_snp[idx] = true; 
-		}
-		else{
-			decode_plink_precomp(decbin, readbin, np);
-			for(unsigned int kk = 0; kk < N; kk++){
-				int b = (int)decbin[kk];
-				s = norm_precomp[b+(idx*4)];
-			//	std::cout << s << " ";
-	    			temp3[j*N + kk] = s * inv_sqrtM; 
-			}
-		}
-     }
-}
-
-void Read_Bed_Blocks_MPI(std::ifstream& in, uint64_t np, 
-    uint64_t blk_size, double *temp3, uint64_t startval, 
-    struct logistics *logg, unsigned char *decbin, unsigned char *readbin, 
-    double *norm_tmp, bool *seen_snp, double *norm_precomp){
-    
-    int N = logg->M;  // Number of individuals
-    int M = logg->N;  // Total number of SNPs
-    uint64_t idx; 
-    double sd=0, avg=0, s;
-    double inv_sqrtM = 1.0 / sqrt((double)M);
-    for(uint64_t j = 0; j < blk_size; j++){
-        // Read raw genotypes for this SNP
-        in.read((char*)readbin, sizeof(char)*np);
-        idx = startval + j; 
-        
-        if (!seen_snp[idx]){		
-            // Decode raw genotypes
-            decode_plink(decbin, readbin, np);
-            
-            // Normalize raw genotypes 
-            standardize(norm_tmp, decbin, N, avg, sd, inv_sqrtM);
-
-            for(unsigned int kk = 0; kk < N; kk++){
-                s = norm_tmp[kk];
-                temp3[j*N + kk] = s;
-            }
-
-            // Store normalization parameters for future use
-            if(sd > 1e-9){
-                norm_precomp[3+(idx*4)] = (0 - avg)/sd;
-                norm_precomp[2+(idx*4)] = (1 - avg)/sd;
-                norm_precomp[0+(idx*4)] = (2 - avg)/sd;
-                norm_precomp[1+(idx*4)] = 0;
-            }
-            seen_snp[idx] = true; 
-        }
-        else{
-            // Use pre-computed normalization values
-            decode_plink_precomp(decbin, readbin, np);
-            for(unsigned int kk = 0; kk < N; kk++){
-                int b = (int)decbin[kk];
-                s = norm_precomp[b+(idx*4)];
-                temp3[j*N + kk] = s * inv_sqrtM; 
-            }
-        }
-    }
-}
-
-void decode_plink_precomp(unsigned char * __restrict__ out,
-                          const unsigned char * __restrict__ in,
-                          const unsigned int n)
-{
-    // #pragma omp parallel for schedule(static, 64)
-    for (unsigned int i = 0; i < n; i++)
-    {
-        unsigned int k = PACK_DENSITY * i;
-        unsigned char tmp = in[i];
-
-        out[k]   =   (tmp & MASK0);
-        out[k+1] = (tmp & MASK1) >> 2;
-        out[k+2] = (tmp & MASK2) >> 4;
-        out[k+3] = (tmp & MASK3) >> 6;
-    }
-}
-
-void decode_plink(unsigned char * __restrict__ out,
-                  const unsigned char * __restrict__ in,
-                  const unsigned int n)
-{
-    // #pragma omp parallel for schedule(static, 64)
-    for (unsigned int i = 0; i < n; i++)
-    {
-        unsigned int k = PACK_DENSITY * i;
-        unsigned char tmp = in[i];
-        unsigned int a1, a2;
-        unsigned char geno;
-
-        // Geno1
-        geno = tmp & MASK0;
-        if (geno == 1)
-            out[k] = 3;
-        else {
-            a1 = !(geno & 1);
-            a2 = !(geno >> 1);
-            out[k] = a1 + a2;
-        }
-        k++;
-
-        // Geno2
-        geno = (tmp & MASK1) >> 2;
-        if (geno == 1)
-            out[k] = 3;
-        else {
-            a1 = !(geno & 1);
-            a2 = !(geno >> 1);
-            out[k] = a1 + a2;
-        }
-        k++;
-
-        // Geno3
-        geno = (tmp & MASK2) >> 4;
-        if (geno == 1)
-            out[k] = 3;
-        else {
-            a1 = !(geno & 1);
-            a2 = !(geno >> 1);
-            out[k] = a1 + a2;
-        }
-        k++;
-
-        // Geno4
-        geno = (tmp & MASK3) >> 6;
-        if (geno == 1)
-            out[k] = 3;
-        else {
-            a1 = !(geno & 1);
-            a2 = !(geno >> 1);
-            out[k] = a1 + a2;
-        }
-    }
-}
-
 void standardize(double *normX, unsigned char *nnX, int N, double &avg, double &sd, double &inv_sqrtM)
 {
     double sum = 0;
     unsigned int ctr = 0;
 
+    #pragma omp parallel for reduction(+:sum, ctr)
     for (unsigned int im = 0; im < N; im++)
     {
         double x = (double)nnX[im];
@@ -511,6 +273,7 @@ void standardize(double *normX, unsigned char *nnX, int N, double &avg, double &
     avg = all_freq;
     sd = stddev;
 
+    #pragma omp parallel for schedule(static)
     for (unsigned int jm = 0; jm < N; jm++)
     {
         double x = (double)nnX[jm];
@@ -566,10 +329,7 @@ string timestamp(struct logistics *logg){
       return  string("");
 }
 
-
-void decode_plink_sse2(uint8_t* __restrict out,
-                       const uint8_t* __restrict in,
-                       unsigned n)
+void decode_plink_sse2(uint8_t* __restrict out, const uint8_t* __restrict in, unsigned n)
 {
     unsigned i = 0;
     
@@ -617,9 +377,7 @@ void decode_plink_sse2(uint8_t* __restrict out,
     }
 }
 
-void decode_plink_precomp_sse2(uint8_t* __restrict out,
-                               const uint8_t* __restrict in,
-                               unsigned n)
+void decode_plink_precomp_sse2(uint8_t* __restrict out, const uint8_t* __restrict in, unsigned n)
 {
     unsigned i = 0;
     
@@ -665,4 +423,42 @@ void decode_plink_precomp_sse2(uint8_t* __restrict out,
         out[base+2] = (uint8_t[4]){3,1,2,0}[(b >> 4) & 3];
         out[base+3] = (uint8_t[4]){3,1,2,0}[(b >> 6) & 3];
     }
+}
+
+void Read_Bed_Local(std::ifstream &in, double *temp3, struct logistics *logg) {
+
+    const size_t M = (size_t)logg->M;
+    const size_t local_N = (size_t)logg->local_N;
+    const size_t local_N_start = (size_t)logg->local_N_start;
+
+    const size_t np = (size_t)ceil((double)M / PACK_DENSITY);
+
+    unsigned char *decbin   = new unsigned char[np * PACK_DENSITY];
+    unsigned char *readbin  = new unsigned char[np];
+    double *norm_tmp        = new double[M];
+
+    double inv_sqrtN = 1.0 / sqrt((double)logg->N);
+
+    size_t snp_offset = 3 + local_N_start * np;
+    in.seekg((std::streamoff)snp_offset, std::ios::beg);
+
+    double avg, sd;
+
+    for (size_t j = 0; j < local_N; j++) {
+
+        in.read((char*)readbin, np);
+
+        decode_plink_sse2(decbin, readbin, np);
+        standardize(norm_tmp, decbin, (int)M, avg, sd, inv_sqrtN);
+
+        size_t base = j * M;
+
+        for (size_t k = 0; k < M; k++) {
+            temp3[base + k] = norm_tmp[k];
+        }
+    }
+
+    delete[] norm_tmp;
+    delete[] decbin;
+    delete[] readbin;
 }

@@ -22,7 +22,6 @@
 
 #define PI         3.14159265
 
-//cpp is confused with c
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -30,7 +29,6 @@ extern "C" {
 double norm2(double mean, double std_dev);
 double rand_val(int seed);
 
-//cpp is confused with c
 #ifdef __cplusplus
 }
 #endif
