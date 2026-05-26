@@ -1,5 +1,6 @@
 # 🧬 DistPCA: Tera-Scale Genomic PCA via Out-of-Core Distributed Parallelism
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20392866.svg)](https://doi.org/10.5281/zenodo.20392866) <br>
 ![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=flat&logo=c%2B%2B&logoColor=white)
 ![HPC](https://img.shields.io/badge/HPC-71797E?style=flat&logo=dna&logoColor=white)
 ![Distributed Computing](https://img.shields.io/badge/Distributed%20Computing-E91E8C?style=flat&logo=apachehadoop&logoColor=white)
