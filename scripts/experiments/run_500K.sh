@@ -15,6 +15,6 @@ mpirun -np ${NP} ../../build/DistPCA.exe \
   -bfile ${BFILE} \
   -nsv ${NSV} \
   -nrhs ${NRHS} \
-  -blockPower_conv_crit ${CONV_CRIT} \
+  -conv_crit ${CONV_CRIT} \
   -toll ${TOLL} \
   -rfetched ${RFETCHED}
