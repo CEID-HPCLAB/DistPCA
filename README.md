@@ -317,9 +317,7 @@ bash run_1000G_accuracy.sh
 > By running the corresponding Python plotting scripts located under `scripts/plots/` ([rel_error.py](./scripts/plots/rel_error.py), [pop_structure.py](./scripts/plots/pop_structure.py)), Figures 5 and 6 of the paper can be generated.
 
 > [!CAUTION]
-> The execution of `run_1000G_accuracy.sh` includes the computation of PCs via full SVD, which requires the entire dataset to be loaded into main memory in uncompressed form.
->
-> The *1000 Genomes* dataset in uncompressed format exceeds 32 GB; therefore, reproducing the accuracy results requires a compute node with at least 40 GB of available RAM.
+> The execution of `run_1000G_accuracy.sh` includes the in-core computation of PCs via full SVD, which requires the entire dataset to be loaded into main memory in uncompressed form. For computing the PCs using LAPACKE's [dgesvd](https://netlib.org/lapack/explore-html//d1/d7f/group__gesvd_gac6bd5d4e645049e49bb70691180abf07.html), at least 105 GB of available RAM is required.
 
 
 ## File Structure
