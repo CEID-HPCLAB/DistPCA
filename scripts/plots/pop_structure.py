@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
  
-PC_FILE_PATH = "../../docs/results/accuracy/singular_vectors.txt"
+PC_FILE_PATH = "../../docs/results/accuracy/1000_genomes_leftSingularVectors.txt"
 PANEL_FILE_PATH = "../../docs/results/accuracy/integrated_call_samples_v3.20130502.ALL.panel"
 
 df = pd.read_csv(PC_FILE_PATH, sep = r"\s+", engine = "python")

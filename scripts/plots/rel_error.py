@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.ticker import LogLocator
 
-APPROX_SINGULAR_VECTORS_PATH = "../../docs/results/accuracy/singular_vectors.txt"
-TRUE_SINGULAR_VECTORS_PATH   = "../../docs/results/accuracy/real_singular_vectors.txt"
+APPROX_SINGULAR_VECTORS_PATH = "../../docs/results/accuracy/1000_genomes_leftSingularVectors.txt"
+TRUE_SINGULAR_VECTORS_PATH   = "../../docs/results/accuracy/1000_genomes_realLeftSingularVectors.txt"
 
 approx_df = pd.read_csv(APPROX_SINGULAR_VECTORS_PATH, sep = r"\s+", engine = "python")
 U_approx = approx_df.drop(columns = ["FID"]).values; U_true = np.loadtxt(TRUE_SINGULAR_VECTORS_PATH)

@@ -259,9 +259,6 @@ int main(int argc, char **argv){
 
         if (logg.rows_fetched >= logg.local_N)
           logg.rows_fetched = logg.local_N;
-        
-        if (rank == 0)
-          cout << endl << timestamp(&logg) << "Memory: " << logg.rows_fetched << " SNPs per block" << endl;
     } 
     
     else {
@@ -350,9 +347,6 @@ int main(int argc, char **argv){
     double *MAT = NULL;
     if (logg.rows_fetched == logg.local_N) {
       uint64_t malloc_size = (uint64_t) logg.local_N * logg.M * sizeof(double);
-      printf("local N -> %d\n", logg.local_N);
-      printf("M -> %d\n", logg.M);
-      printf("malloc_size (bytes) -> %lu\n", malloc_size);
 
       MAT = (double*) malloc(malloc_size);
 
@@ -375,7 +369,6 @@ int main(int argc, char **argv){
       
       if (rank == 0)
         cout << endl << timestamp(&logg) << "Finished reading local data. Time: " << tt2 << " sec" << endl;
-      bedin.close();
     }
     
     double mean, std_dev, norm_rv;
@@ -438,7 +431,15 @@ int main(int argc, char **argv){
       }
     }
 
-    if (logg.trueSVD == 1 && size == 1) {
+  time_t rawtime;
+  time(&rawtime);
+  logg.timeinfo = localtime(&rawtime);
+
+  if (rank == 0 && logg.PRINT_INFO > 0)
+    print_statistics(logg);
+
+
+  if (logg.trueSVD == 1 && rank == 0) {
 
       int min_dim = min(logg.M, logg.N);
 
@@ -458,9 +459,14 @@ int main(int argc, char **argv){
 
       double fone = 1.0, fzero = 0.0;
 
-      mkl_dimatcopy('R','T', logg.N, logg.M, fone, MAT, logg.M, logg.N);
+      if (logg.rows_fetched < logg.N) {
+        free(MAT);
+        MAT = (double*) malloc((uint64_t) logg.N * logg.M * sizeof(double));
+        logg.local_N = logg.N; logg.local_N_start = 0;
+        Read_Bed_Local(bedin, MAT, &logg);
+      }
 
-      printf("komple\n");
+      mkl_dimatcopy('R','T', logg.N, logg.M, fone, MAT, logg.M, logg.N);
 
       double tt1 = dsecnd();
 
@@ -473,8 +479,6 @@ int main(int argc, char **argv){
           TRUE_RIGHT_SING_VECS, logg.N,
           TRUE_superb
       );
-
-      printf("komple2\n");
 
       logg.TIME_2_TRUE_SVD = dsecnd() - tt1;
 
@@ -493,7 +497,6 @@ int main(int argc, char **argv){
               printf("RelError Sigma(%d): %e\n", i, sing_vals_relerror[i]);
       }
 
-      printf("\n");
 
       for (int i = 0; i < logg.M; i++) {
           for (int j = 0; j < logg.NSV; j++) {
@@ -548,8 +551,6 @@ int main(int argc, char **argv){
               printf("Cosine(%d): %lf\n", i, CosineValues[i]);
       }
 
-      printf("\n");
-
       if (logg.filewrite == 1) {
 
           string vecFile, valFile, errFile, cosFile;
@@ -579,19 +580,19 @@ int main(int argc, char **argv){
 
           for (int i = 0; i < logg.M; i++) {
               for (int j = 0; j < logg.NSV; j++)
-                  fprintf(fvec, "% 2.13f ",
+                  fprintf(fvec, "%2.13f ",
                           TRUE_LEFT_SING_VECS[i * min_dim + j]);
               fprintf(fvec, "\n");
           }
 
           for (int i = 0; i < logg.NSV; i++)
-              fprintf(fval, "% 2.13f\n", TRUE_SING_VALUES[i]);
+              fprintf(fval, "%2.13f\n", TRUE_SING_VALUES[i]);
 
           for (int i = 0; i < logg.M * logg.NSV; i++)
-              fprintf(ferr, "% 2.13lf\n", sing_vecs_relerror[i]);
+              fprintf(ferr, "%2.13lf\n", sing_vecs_relerror[i]);
 
           for (int i = 0; i < logg.NSV; i++)
-              fprintf(fcos, "% 2.13lf\n", logg.cos_values[i]);
+              fprintf(fcos, "%2.13lf\n", logg.cos_values[i]);
 
           fclose(fvec);
           fclose(fval);
@@ -614,12 +615,7 @@ int main(int argc, char **argv){
       free(CosineValues);
   }
 
-  time_t rawtime;
-  time(&rawtime);
-  logg.timeinfo = localtime(&rawtime);
-
-  if (rank == 0 && logg.PRINT_INFO > 0)
-    print_statistics(logg);
+  MPI_Barrier(MPI_COMM_WORLD);
 
   if (MAT != NULL)
     free(MAT);

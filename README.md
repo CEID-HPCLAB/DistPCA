@@ -7,7 +7,7 @@
 ![Bioinformatics](https://img.shields.io/badge/Bioinformatics-228B22?style=flat&logo=dna&logoColor=white)
 
 
-**DistPCA** is a distributed out-of-core C++ framework for tera-scale genomic Principal Component Analysis (PCA), designed to scale efficiently across both single- and multi-node computing systems. Built on top of MPI, it employs a hybrid multi-level parallelism scheme combining **multiprocessing**, **OpenMP multithreading**, **SIMD vectorization**, and **double buffering** across all three stages of the PCA pipeline (I/O, data preprocessing, numerical method). Evaluated on datasets reaching up to 11 TB, DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** and preserving the accuracy of the recovered principal components (PCs). For a detailed description of the framework and experimental evaluation, please refer to our [preprint](https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1).
+**DistPCA** is a distributed out-of-core C++ framework for tera-scale genomic Principal Component Analysis (PCA), designed to scale efficiently across both single- and multi-node computing systems. Built on top of **Message Passing Interface (MPI)**, it employs a hybrid multi-level parallelism scheme combining **multiprocessing**, **OpenMP multithreading**, **SIMD vectorization**, and **double buffering** across all three stages of the PCA pipeline (I/O, data preprocessing, numerical method). Evaluated on datasets reaching up to 11 TB, DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** and preserving the accuracy of the recovered principal components (PCs). For a detailed description of the framework and experimental evaluation, please refer to our [preprint](https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1).
 
 ## Table of Contents
 - [Prerequisites & Installation](#prerequisites--installation)
@@ -236,7 +236,7 @@ DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2
 </p>
 
 
-These performance gains are achieved while preserving the accuracy of the recovered PCs, as shown in the following plots.
+These performance gains are achieved while preserving the accuracy of the recovered PCs, as shown in the following figures.
 
 <p align="center">
   <picture>
@@ -247,6 +247,17 @@ These performance gains are achieved while preserving the accuracy of the recove
   <br>
   <em>Figure 3<br><b>Left</b>: Entry-wise relative error of the 10 leading eigenvectors computed by DistPCA for the <b>1000 Genomes</b> dataset, compared to the eigenvectors returned by the full-rank SVD<br><b>Right</b>: Projection of the samples of the <b>1000 Genomes</b> dataset on the top two left singular vectors, as computed by DistPCA. Samples are grouped into five populations: AFR, AMR, EAS, EUR, and SAS</em>
 </p>
+
+<br>
+
+As shown in the following table, *DistPCA* consistently outperforms *PCAone* [[1](https://genome.cshlp.org/content/early/2023/10/05/gr277525122), [2](https://github.com/Zilong-Li/PCAone)], the current state-of-the-art method for large-scale genomic PCA, across all datasets.
+
+| Dataset        | PCAone | DistPCA | Speedup | Reduction % |
+|----------------|--------|----------|----------|--------------|
+| 1000 Genomes   | 173s   | **47s**  | 3.68x    | 72.8%        |
+| 50K Genomes    | 9.1h   | **7.8h** | 1.17x    | 14.1%        |
+| 500K Genomes   | 12.1h  | **2.3h** | 5.26x    | 78.5%        |
+| 1M Genomes     | 7.9h   | **2.6h** | 3.04x    | 67.9%        |
 
 ## Reproducibility
 
@@ -269,7 +280,7 @@ python3 pop_structure.py    # Population structure (PC1 vs PC2) (Figure 6 in the
 
 ### Reproducing the reported results
 
-To reproduce the reported results from scratch, first follow the [Datasets](#datasets) section to download and preprocess the real-world datasets and generate the synthetic ones. Once ready, move the `.bed`, `.bim`, and `.fam` files for each dataset under `scripts/experiments/` and run:
+To reproduce the reported runtime results from scratch, first follow the [Datasets](#datasets) section to download and preprocess the real-world datasets and generate the synthetic ones. Once ready, move the `.bed`, `.bim`, and `.fam` files for each dataset under `scripts/experiments/` and run:
 
 ```bash
 # Move dataset files to scripts/experiments/
@@ -278,38 +289,39 @@ mv <dataset>.bed <dataset>.bim <dataset>.fam scripts/experiments/
 cd scripts/experiments/
 
 bash run_1000G.sh
-bash run_SGDP.sh
-bash run_HGDP.sh
 bash run_50K.sh
 bash run_500K.sh
 bash run_1M.sh
 ```
-
 > [!NOTE]
-> To reproduce the **accuracy results** (Figures 5 and 6), two additional steps are required:
->
-> **1. Save the approximate singular vectors**
-> In `scripts/experiments/run_1000G.sh`, add `-fwrite 1` to the `mpirun` command. This will produce two output files:
-> - `noprefix_singularValues.txt`
-> - `noprefix_singularVectors.txt`
->
-> **2. Compute the full SVD reference**
-> Add `-fullSVD 1` to the same script (only valid for single-rank runs where the dataset fits in RAM). This produces the ground truth:
-> - `noprefix_realLeftSingularVectors.txt`
->
-> **3. Update the plot scripts**
-> Once both runs are complete, update the file paths in the plotting scripts:
-> - `scripts/plots/pop_structure.py` → set `PC_FILE_PATH` to `noprefix_singularVectors.txt`
-> - `scripts/plots/rel_error.py` → set `APPROX_SINGULAR_VECTORS_PATH` to `noprefix_singularVectors.txt`
-> - `scripts/plots/rel_error.py` → set `TRUE_SINGULAR_VECTORS_PATH` to `noprefix_realLeftSingularVectors.txt`
->
-> Then re-run the corresponding plot scripts as described above.
+> After executing the above scripts, the wall-clock time results for each worker configuration will be stored in the `/docs/results/runtime` directory in separate `.txt` files, one per dataset. 
+> 
+> By running the corresponding Python plot scripts located under `scripts/plots/` ([runtime.py](./scripts/plots/runtime.py), [speedup.py](./scripts/plots/speedup.py)), Figures 3 and 4 of the paper can be generated.
+
+> [!IMPORTANT]
+> A key parameter of the proposed hybrid multi-level parallelism scheme is the block size used to partition the dataset, as this determines the number of SNPs processed by each MPI rank at a time and, thus, the parallel I/O performance. The optimal size depends on several factors, including dataset size, RAM, I/O bandwidth, Last-Level Cache (LLC), and the number of compute nodes. In practice, the block size parameter should be selected such that the I/O workload generated by the workers matches the storage system’s capabilities (e.g., bandwidth and latency) and maximizes the LLC hit ratio.
 
 > [!WARNING]
 > Experiments were conducted on the [ARIS supercomputer](https://www.hpc.grnet.gr/en/) using four thin compute nodes. Wall-clock time results may exhibit slight variations depending on cluster infrastructure, node availability, and storage system.
 
-> [!IMPORTANT]
-> A key parameter of the proposed hybrid multi-level parallelism scheme is the block size used to partition the dataset, as this determines the number of SNPs processed by each MPI rank at a time and, thus, the parallel I/O performance. The optimal size depends on several factors, including dataset size, RAM, I/O bandwidth, Last-Level Cache (LLC), and the number of compute nodes. In practice, the block size parameter should be selected such that the I/O workload generated by the workers matches the storage system’s capabilities (e.g., bandwidth and latency) and maximizes the LLC hit ratio.
+To reproduce the reported accuracy results from scratch, after downloading the *1000 Genomes* dataset and moving it to `scripts/experiments/`, run:
+
+```bash
+cd scripts/experiments/
+
+bash run_1000G_accuracy.sh
+```
+
+> [!NOTE]
+> After executing the above script, the eigenvalues and corresponding eigenvectors computed by *DistPCA* will be stored in the `/docs/results/accuracy` directory in separate `.txt` files. Eigenvalues and eigenvectors computed via full SVD using *LAPACKE* are also stored in the same directory in a separate file.
+>
+> By running the corresponding Python plotting scripts located under `scripts/plots/` ([rel_error.py](./scripts/plots/rel_error.py), [pop_structure.py](./scripts/plots/pop_structure.py)), Figures 5 and 6 of the paper can be generated.
+
+> [!CAUTION]
+> The execution of `run_1000G_accuracy.sh` includes the computation of PCs via full SVD, which requires the entire dataset to be loaded into main memory in uncompressed form.
+>
+> The *1000 Genomes* dataset in uncompressed format exceeds 32 GB; therefore, reproducing the accuracy results requires a compute node with at least 40 GB of available RAM.
+
 
 ## File Structure
 ```

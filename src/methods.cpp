@@ -21,8 +21,6 @@
 #include <mpi.h>
 #include <vector>
 
-int save_eigenval_tracking = 0;
-
 void SubspaceIteration_MPI(double *MAT, double *RHS2, logistics *logg) {
   
   int M = logg->M, N = logg->N, local_N = logg->local_N; int NRHS = logg->NRHS;
@@ -74,7 +72,6 @@ void SubspaceIteration_MPI(double *MAT, double *RHS2, logistics *logg) {
 
     tt1 = dsecnd();
     
-    // Reduce partial results across all MPI processes to obtain the final C
     MPI_Allreduce(ARHS_local, ARHS, M*NRHS, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
     
     tt2 = dsecnd() - tt1;
@@ -84,8 +81,8 @@ void SubspaceIteration_MPI(double *MAT, double *RHS2, logistics *logg) {
     for (kk = 0; kk < powers - 1; kk++) {
       tt1 = dsecnd();
 
-      info_sgeqrf_lapacke = LAPACKE_dgeqrf(LAPACK_ROW_MAJOR, M, NRHS, ARHS, NRHS, tau); // QR factorization of C
-      info_sorgqr_lapacke = LAPACKE_dorgqr(LAPACK_ROW_MAJOR, M, NRHS, NRHS, ARHS, NRHS, tau); // Obtain Q 
+      info_sgeqrf_lapacke = LAPACKE_dgeqrf(LAPACK_ROW_MAJOR, M, NRHS, ARHS, NRHS, tau);
+      info_sorgqr_lapacke = LAPACKE_dorgqr(LAPACK_ROW_MAJOR, M, NRHS, NRHS, ARHS, NRHS, tau); 
       
       tt2 = dsecnd() - tt1;
       logg->TIME_2_GS += tt2;
@@ -112,7 +109,6 @@ void SubspaceIteration_MPI(double *MAT, double *RHS2, logistics *logg) {
 
       tt1 = dsecnd();
       
-      // Reduce partial results across all MPI processes to obtain the final C
       MPI_Allreduce(ARHS_local, ARHS, M*NRHS, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
       
       tt2 = dsecnd() - tt1;
@@ -122,8 +118,8 @@ void SubspaceIteration_MPI(double *MAT, double *RHS2, logistics *logg) {
 
     tt1 = dsecnd();
     
-    info_sgeqrf_lapacke = LAPACKE_dgeqrf(LAPACK_ROW_MAJOR, M, NRHS, ARHS, NRHS, tau); // QR factorization of C
-    info_sorgqr_lapacke = LAPACKE_dorgqr(LAPACK_ROW_MAJOR, M, NRHS, NRHS, ARHS, NRHS, tau); // Obtain Q
+    info_sgeqrf_lapacke = LAPACKE_dgeqrf(LAPACK_ROW_MAJOR, M, NRHS, ARHS, NRHS, tau);
+    info_sorgqr_lapacke = LAPACKE_dorgqr(LAPACK_ROW_MAJOR, M, NRHS, NRHS, ARHS, NRHS, tau);
     
     tt2 = dsecnd() - tt1;
     logg->TIME_2_GS += tt2;
@@ -290,9 +286,9 @@ void SubspaceIteration_MPI(double *MAT, double *RHS2, logistics *logg) {
     fclose(fwrite_singvalues);
 
     if (logg->prefixname.empty())
-      tempname = ConstructFilename(*logg, "singularVectors");
+      tempname = ConstructFilename(*logg, "leftSingularVectors");
     else
-      tempname = logg->prefixname + "_singularVectors.txt";
+      tempname = logg->prefixname + "_leftSingularVectors.txt";
       
     FILE *fwrite_singvecs = fopen(tempname.c_str(), "w");
     if (fwrite_singvecs == NULL) {
@@ -400,6 +396,9 @@ void BlockSubspaceIter_MPI_OOC(const char* bedfile, double *RHS2, logistics *log
     std::vector<unsigned char> block_buf;
     block_buf.resize(rows_fetched * np); // buffer to store the compressed genotypes for each fetched block
 
+    // A^T -> SNP-major | A -> indiv-major
+
+    // Lambda function to compute the MMV product A @ (A^T @ K) 
     auto _compute_matvec_buff = [&]() {
         memset(ARHS_local, 0, M*NRHS*sizeof(double));
 
@@ -461,7 +460,7 @@ void BlockSubspaceIter_MPI_OOC(const char* bedfile, double *RHS2, logistics *log
             
             tt1 = dsecnd();
             
-            // A^T @ C for the current block
+            // A^T @ K
             cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, actual_block_size, NRHS, M,
                       1.0, LOC_MAT, M, RHS2, NRHS, 0.0, RHS_buf, NRHS);
             
@@ -472,7 +471,7 @@ void BlockSubspaceIter_MPI_OOC(const char* bedfile, double *RHS2, logistics *log
             
             tt1 = dsecnd();
             
-            // A @ (A^T @ C) for the current block
+            // A @ (A^T @ K)
             cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans,
                       M, NRHS, actual_block_size,
                       1.0, LOC_MAT, M, RHS_buf, NRHS, 1.0, ARHS_local, NRHS);
@@ -495,30 +494,6 @@ void BlockSubspaceIter_MPI_OOC(const char* bedfile, double *RHS2, logistics *log
     if (logg->blockPower_conv_crit == 2)
         memcpy(RHS2_old, RHS2, M * NRHS * sizeof(double));
 
-    // Added on 14/12/25: before getting in the main loop, open the .csv file to log the eigenvalues per iteration
-    // Get current date and time for filename prefix
-    // time_t now = time(0);
-    // struct tm* timeinfo = localtime(&now);
-    // char datetime_prefix[32];
-    // strftime(datetime_prefix, sizeof(datetime_prefix), "%d_%m_%Y_%H:%M:%S", timeinfo);
-    
-    // FILE *eigenval_tracking_file = NULL;
-    // if (rank == 0 && save_eigenval_tracking == 1) {
-    //   std::string tracking_filename = std::string(datetime_prefix) + "_eigenvalue_tracking.csv";
-    //   eigenval_tracking_file = fopen(tracking_filename.c_str(), "w");
-    //   if (eigenval_tracking_file == NULL) {
-    //     perror("fopen eigenvalue_tracking");
-    //     MPI_Abort(MPI_COMM_WORLD, 1);
-    //   }
-      
-    //   // write header
-    //   fprintf(eigenval_tracking_file, "iteration");
-    //   for (jj = 0; jj < logg->NSV; jj++) {
-    //     fprintf(eigenval_tracking_file, ",eigenvalue_%d,rel_change_%d", jj+1, jj+1);
-    //   }
-    //   fprintf(eigenval_tracking_file, "\n");
-    // }
-
     // Main power iteration loop
     for (ii = 0; ii < max_iter; ii++) {
         _compute_matvec_buff();
@@ -537,7 +512,7 @@ void BlockSubspaceIter_MPI_OOC(const char* bedfile, double *RHS2, logistics *log
             
             memcpy(RHS2, ARHS, M * NRHS * sizeof(double));
 
-            // A @ (A^T @ Q) to get the updated C for the next power iteration
+            // A @ (A^T @ Q)
             _compute_matvec_buff();
         }
         
@@ -572,7 +547,7 @@ void BlockSubspaceIter_MPI_OOC(const char* bedfile, double *RHS2, logistics *log
         
         double* w = (double*) malloc(NRHS * sizeof(double));
 
-        // Eigen decomposition of the projected matrix M
+        // eigen decomp M (M = X @ diag(w) @ X^T, where w are eigenvalues and X are eigenvectors)
         LAPACKE_dsyev(LAPACK_ROW_MAJOR, 'V', 'U', NRHS, B2, NRHS, w);
         
         tt2 = dsecnd() - tt1;
@@ -580,7 +555,7 @@ void BlockSubspaceIter_MPI_OOC(const char* bedfile, double *RHS2, logistics *log
 
         memcpy(B2_duplicate, B2, NRHS * NRHS * sizeof(double));
         
-        // eigenvals and eigenvecs in descending order
+        // eigenvals && eigenvecs in descending order
         for (ii2 = 0; ii2 < NRHS; ii2++) {
             for (jj2 = 0; jj2 < NRHS; jj2++) {
                 B2[ii2 * NRHS + jj2] = B2_duplicate[ii2 * NRHS + (NRHS - 1 - jj2)];
@@ -591,6 +566,7 @@ void BlockSubspaceIter_MPI_OOC(const char* bedfile, double *RHS2, logistics *log
         
         tt1 = dsecnd();
         
+        // C = Q @ X (where X are the eigenvectors of M)
         cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, M, NRHS, NRHS, 
                     fone, ARHS, NRHS, B2, NRHS, fzero, RHS2, NRHS);
         
@@ -605,23 +581,6 @@ void BlockSubspaceIter_MPI_OOC(const char* bedfile, double *RHS2, logistics *log
             
             logg->delta_iter[ii] += logg->sing_values[jj];
         }
-        
-        // // Eigenvalue tracking
-        // if (rank == 0 && eigenval_tracking_file != NULL) {
-        //     fprintf(eigenval_tracking_file, "%d", ii);
-        //     for (jj = 0; jj < logg->NSV; jj++) {
-        //         double eigenval = SING_VALUES[jj] * SING_VALUES[jj];
-        //         if (ii > 0) {
-        //             double eigenval_old = SING_VALUES_OLD[jj] * SING_VALUES_OLD[jj];
-        //             double rel_change = fabs(eigenval - eigenval_old) / eigenval;
-        //             fprintf(eigenval_tracking_file, ",%.13e,%.6e", eigenval, rel_change);
-        //         } else {
-        //             fprintf(eigenval_tracking_file, ",%.13e,NA", eigenval);
-        //         }
-        //     }
-        //     fprintf(eigenval_tracking_file, "\n");
-        //     fflush(eigenval_tracking_file);
-        // }
         
         if (ii > 0) {
             // Trace-based criterion (Mode 0), Individual eigenvalue criterion (Mode 1), or MEV criterion (Mode 2) 
@@ -672,23 +631,6 @@ void BlockSubspaceIter_MPI_OOC(const char* bedfile, double *RHS2, logistics *log
         free(w);
     }
     
-    // // Added on 14/12/25: close the eigenvalue tracking file + final eigenvalues
-    // if (rank == 0 && eigenval_tracking_file != NULL) {
-    //     // empty line for gap
-    //     fprintf(eigenval_tracking_file, "\n");
-        
-    //     // final approximate eigenvalues section
-    //     fprintf(eigenval_tracking_file, "# Final Approximate Eigenvalues\n");
-    //     fprintf(eigenval_tracking_file, "eigenvalue_index,final_value\n");
-        
-    //     for (jj = 0; jj < logg->NSV; jj++) {
-    //         double final_eigenval = logg->sing_values[jj] * logg->sing_values[jj];
-    //         fprintf(eigenval_tracking_file, "%d,%.13e\n", jj+1, final_eigenval);
-    //     }
-        
-    //     fclose(eigenval_tracking_file);
-    // }
-
     MPI_File_close(&fh);
 
     logg->blockPower_total_its = (ii < max_iter) ? ii + 1 : ii;
@@ -718,12 +660,12 @@ void BlockSubspaceIter_MPI_OOC(const char* bedfile, double *RHS2, logistics *log
         fclose(fwrite_singvalues);
 
         tempname = logg->prefixname.empty() ? 
-                   ConstructFilename(*logg, "singularVectors") : 
-                   logg->prefixname + "_singularVectors.txt";
+                   ConstructFilename(*logg, "leftSingularVectors") : 
+                   logg->prefixname + "_leftSingularVectors.txt";
         
         FILE *fwrite_singvecs = fopen(tempname.c_str(), "w");
         if (fwrite_singvecs == NULL) {
-            perror("fopen singularVectors");
+            perror("fopen leftSingularVectors");
             MPI_Abort(MPI_COMM_WORLD, 1);
         }
         
@@ -838,7 +780,9 @@ void BlockSubspaceIter_MPI_OOC_double_buffering(const char* bedfile, double *RHS
 
     double avg, sd; // for standardization
 
-    // Lambda function to compute A @ RHS2 and A' @ (A @ RHS2) for the current block, with double buffering for the next block
+    // A^T -> SNP-major | A -> indiv-major
+
+    // Lambda function to compute A^T @ K and A @ (A^T @ K) with double buffering of blocks to overlap I/O and computation
     auto _compute_matvec_buff = [&]() {
         memset(ARHS_local, 0, M*NRHS*sizeof(double));
 
@@ -905,7 +849,7 @@ void BlockSubspaceIter_MPI_OOC_double_buffering(const char* bedfile, double *RHS
             
             
               tt1 = dsecnd();
-              // A^T @ C for the previous block
+              // A^T @ K for the previous block
               cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, rows_fetched, NRHS, M,
                           1.0, LOC_MAT[prev], M, RHS2, NRHS, 0.0, RHS_buf, NRHS);
               tt2 = dsecnd() - tt1;
@@ -914,7 +858,7 @@ void BlockSubspaceIter_MPI_OOC_double_buffering(const char* bedfile, double *RHS
               logg->TIME_2_MM_A += tt2;
               
               tt1 = dsecnd();
-              // A^T @ (A @ C) for the previous block
+              // A @ (A^T @ K) for the previous block
               cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans,M, NRHS, rows_fetched,
                         1.0, LOC_MAT[prev], M, RHS_buf, NRHS, 1.0, ARHS_local, NRHS);
               tt2 = dsecnd() - tt1;
@@ -961,16 +905,22 @@ void BlockSubspaceIter_MPI_OOC_double_buffering(const char* bedfile, double *RHS
         }
         
         tt1 = dsecnd();
+
+        // A^T @ K for the last block
         cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, remaining_rows, NRHS, M,
                   1.0, LOC_MAT[last], M, RHS2, NRHS, 0.0, RHS_buf, NRHS);
+
         tt2 = dsecnd() - tt1;
         
         logg->TIME_2_MM += tt2;
         logg->TIME_2_MM_A += tt2;
         
         tt1 = dsecnd();
+
+        // A @ (A^T @ K) for the last block
         cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans,M, NRHS, remaining_rows,
                   1.0, LOC_MAT[last], M, RHS_buf, NRHS, 1.0, ARHS_local, NRHS);
+
         tt2 = dsecnd() - tt1;
         
         logg->TIME_2_MM += tt2;
@@ -988,31 +938,6 @@ void BlockSubspaceIter_MPI_OOC_double_buffering(const char* bedfile, double *RHS
     if (logg->blockPower_conv_crit == 2)
         memcpy(RHS2_old, RHS2, M * NRHS * sizeof(double));
 
-
-    // // Added on 14/12/25: before getting in the main loop, open the .csv file to log the eigenvalues per iteration
-    // // Get current date and time for filename prefix
-    // time_t now = time(0);
-    // struct tm* timeinfo = localtime(&now);
-    // char datetime_prefix[32];
-    // strftime(datetime_prefix, sizeof(datetime_prefix), "%d_%m_%Y_%H:%M:%S", timeinfo);
-    
-    // FILE *eigenval_tracking_file = NULL;
-    // if (rank == 0 && save_eigenval_tracking == 1) {
-    //   std::string tracking_filename = std::string(datetime_prefix) + "_eigenvalue_tracking.csv";
-    //   eigenval_tracking_file = fopen(tracking_filename.c_str(), "w");
-    //   if (eigenval_tracking_file == NULL) {
-    //     perror("fopen eigenvalue_tracking");
-    //     MPI_Abort(MPI_COMM_WORLD, 1);
-    //   }
-      
-    //   // write header
-    //   fprintf(eigenval_tracking_file, "iteration");
-    //   for (jj = 0; jj < logg->NSV; jj++) {
-    //     fprintf(eigenval_tracking_file, ",eigenvalue_%d,rel_change_%d", jj+1, jj+1);
-    //   }
-    //   fprintf(eigenval_tracking_file, "\n");
-    // }
-
     for (ii = 0; ii < max_iter; ii++) {
         _compute_matvec_buff();
         
@@ -1026,9 +951,10 @@ void BlockSubspaceIter_MPI_OOC_double_buffering(const char* bedfile, double *RHS
             logg->TIME_2_GS += tt2;
             
             memcpy(RHS2, ARHS, M * NRHS * sizeof(double));
-            _compute_matvec_buff(); // A @ (A^T @ Q) to get the updated C for the next power iteration
+            _compute_matvec_buff(); // A @ (A^T @ Q)
         }
 
+        // at least one power iteration is performed
         tt1 = dsecnd();
         
         LAPACKE_dgeqrf(LAPACK_ROW_MAJOR, M, NRHS, ARHS, NRHS, tau);
@@ -1059,7 +985,7 @@ void BlockSubspaceIter_MPI_OOC_double_buffering(const char* bedfile, double *RHS
         
         double* w = (double*) malloc(NRHS * sizeof(double));
 
-        // Eigen decomp M
+        // eigen decomp M (M = X @ diag(w) @ X^T, where w are eigenvalues and X are eigenvectors)
         LAPACKE_dsyev(LAPACK_ROW_MAJOR, 'V', 'U', NRHS, B2, NRHS, w);
         tt2 = dsecnd() - tt1;
         
@@ -1075,7 +1001,8 @@ void BlockSubspaceIter_MPI_OOC_double_buffering(const char* bedfile, double *RHS
         
         memcpy(ARHS, RHS2, M * NRHS * sizeof(double));
         tt1 = dsecnd();
-    
+        
+        // iter update -> C = Q @ X
         cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
                     M, NRHS, NRHS, fone, ARHS, NRHS, B2, NRHS, fzero, RHS2, NRHS);
         
@@ -1090,23 +1017,6 @@ void BlockSubspaceIter_MPI_OOC_double_buffering(const char* bedfile, double *RHS
             
             logg->delta_iter[ii] += logg->sing_values[jj];
         }
-        
-        // Eigenvalue tracking
-        // if (rank == 0 && eigenval_tracking_file != NULL) {
-        //     fprintf(eigenval_tracking_file, "%d", ii);
-        //     for (jj = 0; jj < logg->NSV; jj++) {
-        //         double eigenval = SING_VALUES[jj] * SING_VALUES[jj];
-        //         if (ii > 0) {
-        //             double eigenval_old = SING_VALUES_OLD[jj] * SING_VALUES_OLD[jj];
-        //             double rel_change = fabs(eigenval - eigenval_old) / eigenval;
-        //             fprintf(eigenval_tracking_file, ",%.13e,%.6e", eigenval, rel_change);
-        //         } else {
-        //             fprintf(eigenval_tracking_file, ",%.13e,NA", eigenval);
-        //         }
-        //     }
-        //     fprintf(eigenval_tracking_file, "\n");
-        //     fflush(eigenval_tracking_file);
-        // }
         
         if (ii > 0) {
           // Trace-based criterion (Mode 0), Individual eigenvalue criterion (Mode 1), or MEV criterion (Mode 2)
@@ -1154,23 +1064,6 @@ void BlockSubspaceIter_MPI_OOC_double_buffering(const char* bedfile, double *RHS
 
         free(w);
     }
-    
-    // Added on 14/12/25: close the eigenvalue tracking file + final eigenvalues
-    // if (rank == 0 && eigenval_tracking_file != NULL) {
-    //     // empty line for gap
-    //     fprintf(eigenval_tracking_file, "\n");
-        
-    //     // final approximate eigenvalues section
-    //     fprintf(eigenval_tracking_file, "# Final Approximate Eigenvalues\n");
-    //     fprintf(eigenval_tracking_file, "eigenvalue_index,final_value\n");
-        
-    //     for (jj = 0; jj < logg->NSV; jj++) {
-    //         double final_eigenval = logg->sing_values[jj] * logg->sing_values[jj];
-    //         fprintf(eigenval_tracking_file, "%d,%.13e\n", jj+1, final_eigenval);
-    //     }
-        
-    //     fclose(eigenval_tracking_file);
-    // }
 
     MPI_File_close(&fh);
 
@@ -1201,12 +1094,12 @@ void BlockSubspaceIter_MPI_OOC_double_buffering(const char* bedfile, double *RHS
         fclose(fwrite_singvalues);
 
         tempname = logg->prefixname.empty() ? 
-                   ConstructFilename(*logg, "singularVectors") : 
-                   logg->prefixname + "_singularVectors.txt";
+                   ConstructFilename(*logg, "leftSingularVectors") : 
+                   logg->prefixname + "_leftSingularVectors.txt";
         
         FILE *fwrite_singvecs = fopen(tempname.c_str(), "w");
         if (fwrite_singvecs == NULL) {
-            perror("fopen singularVectors");
+            perror("fopen leftSingularVectors");
             MPI_Abort(MPI_COMM_WORLD, 1);
         }
         
