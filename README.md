@@ -308,7 +308,6 @@ To reproduce the reported accuracy results from scratch, after downloading the *
 
 ```bash
 cd scripts/experiments/
-
 bash run_1000G_accuracy.sh
 ```
 
