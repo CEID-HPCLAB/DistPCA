@@ -248,7 +248,7 @@ These performance gains are achieved while preserving the accuracy of the recove
   <em>Figure 3<br><b>Left</b>: Entry-wise relative error of the 10 leading eigenvectors computed by DistPCA for the <b>1000 Genomes</b> dataset, compared to the eigenvectors returned by the full-rank SVD<br><b>Right</b>: Projection of the samples of the <b>1000 Genomes</b> dataset on the top two left singular vectors, as computed by DistPCA. Samples are grouped into five populations: AFR, AMR, EAS, EUR, and SAS</em>
 </p>
 
-<br>
+### Comparison with PCAone
 
 As shown in the following table, *DistPCA* consistently outperforms *PCAone* [[1](https://genome.cshlp.org/content/early/2023/10/05/gr277525122), [2](https://github.com/Zilong-Li/PCAone)], the current state-of-the-art method for large-scale genomic PCA, across all datasets.
 
@@ -313,7 +313,7 @@ bash run_1000G_accuracy.sh
 ```
 
 > [!NOTE]
-> After executing the above script, the eigenvalues and corresponding eigenvectors computed by *DistPCA* will be stored in the `/docs/results/accuracy` directory in separate `.txt` files. Eigenvalues and eigenvectors computed via full SVD using *LAPACKE* are also stored in the same directory in a separate file.
+> After executing the above script, the eigenvalues and corresponding eigenvectors computed by *DistPCA* will be stored in the `/docs/results/accuracy` directory in separate `.txt` files. For reference, eigenvalues and eigenvectors computed via full SVD using *LAPACKE* are also stored in the same directory in a separate file.
 >
 > By running the corresponding Python plotting scripts located under `scripts/plots/` ([rel_error.py](./scripts/plots/rel_error.py), [pop_structure.py](./scripts/plots/pop_structure.py)), Figures 5 and 6 of the paper can be generated.
 
