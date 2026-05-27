@@ -3,7 +3,6 @@
 source /opt/intel/oneapi/setvars.sh
 export OMP_NUM_THREADS=8
 
-NP=8
 BFILE="1000G.qc.pruned"
 NSV=20
 NRHS=40
