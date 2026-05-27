@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
  
 PC_FILE_PATH = "../../docs/results/accuracy/1000_genomes_leftSingularVectors.txt"
@@ -10,6 +11,11 @@ panel = pd.read_csv(PANEL_FILE_PATH, sep = "\t")[["sample", "super_pop"]]
 panel.columns = ["FID", "continent"]
 
 df = df.merge(panel, on = "FID", how = "left").dropna(subset = ["continent"])
+
+eur = df[df["continent"] == "EUR"]
+
+if np.median(eur["PC1"]) < 0:
+    df["PC1"] *= -1
 
 plt.rcParams.update({
     "font.family": "DejaVu Serif",
