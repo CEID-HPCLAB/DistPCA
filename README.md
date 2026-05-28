@@ -212,7 +212,7 @@ A detailed overview of the ARIS infrastructure is available [here](https://doc.a
 
 ### Results
 
-DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** across all evaluated scenarios. As shown in the figures, the *SGDP* and *HGDP* datasets are omitted, as they complete in under 5 seconds even with a single MPI rank.
+DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** across all evaluated scenarios. As shown in the figures, the *SGDP* and *HGDP* datasets are omitted, as they complete in under 5 seconds even with 8 MPI ranks.
 
 <br>
 <p align="center">
