@@ -129,7 +129,7 @@ string ConstructFilename(struct logistics logg, string fileType){
 void print_statistics(struct logistics logg) {
 
   printf("----------------------------------------------------------\n");
-  printf("DistPCA software package, Version: 1.0.\n");
+  printf("DistPCA software package, Version: 1.0.0\n");
   printf( "Current local time and date: %s", asctime (logg.timeinfo) );
   printf("Total number of threads exploited: %d\n",logg.threads);
   printf("RAM size in KBs: %d\n",logg.ram_KB);
