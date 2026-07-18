@@ -16,6 +16,7 @@
 - [Performance Evaluation](#performance-evaluation)
 - [Reproducibility](#reproducibility)
 - [File Structure](#file-structure)
+- [Planned Features](#planned-features)
 - [Citation](#citation)
 - [Acknowledgments](#acknowledgments)
 
@@ -338,6 +339,13 @@ DistPCA/
 │
 ├── Makefile
 ```
+
+## Planned Features
+
+- [ ] Improve the API documentation
+- [ ] Provide a Python API
+- [ ] Integrate multi-GPU support
+- [ ] Support alternative out-of-core methods for PCs approximation
 
 ## Citation
 
