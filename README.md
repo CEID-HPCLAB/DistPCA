@@ -1,6 +1,8 @@
 # 🧬 DistPCA: Tera-Scale Genomic PCA via Out-of-Core Distributed Parallelism
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20392866.svg)](https://doi.org/10.5281/zenodo.20392866) <br>
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20392866.svg)](https://doi.org/10.5281/zenodo.20392866)
+[![Release](https://img.shields.io/github/v/release/CEID-HPCLAB/DistPCA?color=orange)](https://github.com/CEID-HPCLAB/DistPCA/releases/tag/v1.0.0)
+[![License](https://img.shields.io/badge/License-MIT-FFDEAD)](https://opensource.org/licenses/MIT)  <br>
 ![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=flat&logo=c%2B%2B&logoColor=white)
 ![HPC](https://img.shields.io/badge/HPC-71797E?style=flat&logo=dna&logoColor=white)
 ![Distributed Computing](https://img.shields.io/badge/Distributed%20Computing-E91E8C?style=flat&logo=apachehadoop&logoColor=white)
@@ -212,7 +214,7 @@ A detailed overview of the ARIS infrastructure is available [here](https://doc.a
 
 ### Results
 
-DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** across all evaluated scenarios. As shown in the figures, the *SGDP* and *HGDP* datasets are omitted, as they complete in under 5 seconds even with a single MPI rank.
+DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** across all evaluated scenarios. As shown in the figures, the *SGDP* and *HGDP* datasets are omitted, as they complete in under 5 seconds even with 8 MPI ranks.
 
 <br>
 <p align="center">
