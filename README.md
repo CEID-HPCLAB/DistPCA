@@ -256,11 +256,11 @@ These performance gains are achieved while preserving the accuracy of the recove
 As shown in the following table, *DistPCA* consistently outperforms *PCAone* [[1](https://genome.cshlp.org/content/early/2023/10/05/gr277525122), [2](https://github.com/Zilong-Li/PCAone)], the current state-of-the-art method for large-scale genomic PCA, across all datasets.
 
 | Dataset        | PCAone | DistPCA | Speedup | Reduction % |
-|----------------|--------|----------|----------|--------------|
-| 1000 Genomes   | 173s   | **47s**  | 3.68x    | 72.8%        |
-| 50K Genomes    | 9.1h   | **7.8h** | 1.17x    | 14.1%        |
-| 500K Genomes   | 12.1h  | **2.3h** | 5.26x    | 78.5%        |
-| 1M Genomes     | 7.9h   | **2.6h** | 3.04x    | 67.9%        |
+|:---------------:|:-------:|:--------:|:--------:|:------------:|
+| 1000 Genomes   |  173s  |   **47s** |   3.68x |       72.8% |
+| 50K Genomes    |  9.1h  |  **7.8h** |   1.17x |       14.1% |
+| 500K Genomes   | 12.1h  |  **2.3h** |   5.26x |       78.5% |
+| 1M Genomes     |  7.9h  |  **2.6h** |   3.04x |       67.9% |
 
 ## Reproducibility
 
