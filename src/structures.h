@@ -75,7 +75,7 @@ struct logistics
   int    blockPower_maxiter;
   int    blockPower_conv_crit;
   double blockPower_trace_error; 
-  double toll;                  
+  double tol;                  
   vector<double> delta_iter;
 
   vector<double> left_sing_vecs;

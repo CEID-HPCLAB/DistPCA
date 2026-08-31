@@ -65,7 +65,7 @@ mpirun -np <num_processes> ./build/DistPCA.exe \
   -nrhs <nrhs> \
   -power <num_power_iterations> \
   -crit <convergence_criterion> \
-  -toll <convergence_tolerance> \
+  -tol <convergence_tolerance> \
   -bsize <block_size> \
   -miter <max_iterations> \
   -verbose <verbose> \
@@ -81,7 +81,7 @@ mpirun -np <num_processes> ./build/DistPCA.exe \
 | `-nrhs` | Dimension of the target subspace (Default: `2 * nsv`) |
 | `-power` | Number of power iterations to perform (Default: `1`) |
 | `-crit` | Convergence criterion (Default: `2`) |
-| `-toll` | Convergence tolerance (Default: `1e-3`) |
+| `-tol` | Convergence tolerance (Default: `1e-3`) |
 | `-bsize` | Total number of SNPs per block (Default: `100`) |
 | `-miter` | Maximum iterations to run if convergence criterion is taking longer to achieve (Default: `100`) |
 | `-verbose` | Logging level. If set to `2`, detailed convergence info is printed (Default: `1`) |

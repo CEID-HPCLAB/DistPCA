@@ -196,7 +196,7 @@ void initialize_structure(struct logistics *logg) {
   logg->blockPower_trace_error = 0.0;
   logg->blockPower_maxiter = 100;
   logg->blockPower_conv_crit = 1;
-  logg->toll = 1e-3;
+  logg->tol = 1e-3;
 
   logg->TIME_2_GS = 0; 
   logg->TIME_2_LOAD_MATRIX=0;

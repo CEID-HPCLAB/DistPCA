@@ -8,7 +8,7 @@ BFILE="1000G.qc.pruned"
 NSV=10
 NRHS=20
 CONV_CRIT=2
-TOLL=1e-3
+TOL=1e-3
 BLOCKSIZE=100
 SVD=1
 LOG=1
@@ -21,7 +21,7 @@ mpirun -np ${NP} ../../build/DistPCA.exe \
   -nsv ${NSV} \
   -nrhs ${NRHS} \
   -crit ${CONV_CRIT} \
-  -toll ${TOLL} \
+  -tol ${TOL} \
   -bsize ${BLOCKSIZE} \
   -fullSVD ${SVD} \
   -fwrite ${LOG} \

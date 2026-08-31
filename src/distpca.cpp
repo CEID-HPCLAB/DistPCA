@@ -80,7 +80,7 @@ int main(int argc, char **argv){
     findarg("bsize", INT, &logg.rows_fetched, argc, argv);
     findarg("verbose", INT, &logg.PRINT_INFO, argc, argv);
     findarg("fwrite", INT, &logg.filewrite, argc, argv);
-    findarg("toll", DOUBLE, &logg.toll, argc, argv);
+    findarg("tol", DOUBLE, &logg.tol, argc, argv);
     findarg("miter", INT, &logg.blockPower_maxiter, argc, argv);
     findarg("crit", INT, &logg.blockPower_conv_crit, argc, argv);
     findarg("power", INT, &logg.power, argc, argv);

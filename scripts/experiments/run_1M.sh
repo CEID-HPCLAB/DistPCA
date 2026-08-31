@@ -7,7 +7,7 @@ BFILE="1M_Genomes"
 NSV=20
 NRHS=40
 CONV_CRIT=2
-TOLL=1e-3
+TOL=1e-3
 BLOCKSIZE=100
 
 NUM_MPI_RANKS=(1 2 4 8 12 16 24 32 48 64)
@@ -34,7 +34,7 @@ do
       -nsv ${NSV} \
       -nrhs ${NRHS} \
       -crit ${CONV_CRIT} \
-      -toll ${TOLL} \
+      -tol ${TOL} \
       -bsize ${BLOCKSIZE} | tee ${LOGFILE}
 
     TIME=$(grep "Total wall-clock time elapsed:" ${LOGFILE} | head -n 1 | awk '{print $5}')

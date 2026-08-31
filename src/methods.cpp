@@ -201,7 +201,7 @@ void SubspaceIteration_MPI(double *MAT, double *RHS2, logistics *logg) {
                 << fixed << setprecision(13)
                 << logg->blockPower_trace_error << endl;
         
-        if (logg->blockPower_trace_error <= logg->toll)
+        if (logg->blockPower_trace_error <= logg->tol)
           break;
 
       }
@@ -212,7 +212,7 @@ void SubspaceIteration_MPI(double *MAT, double *RHS2, logistics *logg) {
         converged = 0;
         
         for (jj = 0; jj < logg->NSV; jj++) {
-          if (fabs((SING_VALUES[jj]-SING_VALUES_OLD[jj])/SING_VALUES[jj]) <= logg->toll)
+          if (fabs((SING_VALUES[jj]-SING_VALUES_OLD[jj])/SING_VALUES[jj]) <= logg->tol)
             converged++;
         }
 
@@ -243,7 +243,7 @@ void SubspaceIteration_MPI(double *MAT, double *RHS2, logistics *logg) {
                 << fixed << setprecision(13)
                 << mev_error << endl;
       
-        if (mev_error <= logg->toll)
+        if (mev_error <= logg->tol)
           break;
       }
     }
@@ -589,12 +589,12 @@ void BlockSubspaceIter_MPI_OOC(const char* bedfile, double *RHS2, logistics *log
                 if (rank == 0 && logg->PRINT_INFO > 1) {
                     printf("Iteration %d: rel. error: %02.13f\n", ii, logg->blockPower_trace_error);
                 }
-                if (logg->blockPower_trace_error <= logg->toll) break;
+                if (logg->blockPower_trace_error <= logg->tol) break;
                 
             } else if (logg->blockPower_conv_crit == 1) {
                 converged = 0;
                 for (jj = 0; jj < logg->NSV; jj++) 
-                    if (fabs((SING_VALUES[jj] - SING_VALUES_OLD[jj]) / SING_VALUES[jj]) <= logg->toll) {
+                    if (fabs((SING_VALUES[jj] - SING_VALUES_OLD[jj]) / SING_VALUES[jj]) <= logg->tol) {
                         converged++;
                     }
                 if (rank == 0 && logg->PRINT_INFO > 1) 
@@ -617,7 +617,7 @@ void BlockSubspaceIter_MPI_OOC(const char* bedfile, double *RHS2, logistics *log
                 if (rank == 0 && logg->PRINT_INFO > 1)
                     printf("Iteration %d: MEV error: %02.13f\n", ii, mev_error);
                 
-                if (mev_error <= logg->toll) break;
+                if (mev_error <= logg->tol) break;
             }
         }
         
@@ -1025,12 +1025,12 @@ void BlockSubspaceIter_MPI_OOC_double_buffering(const char* bedfile, double *RHS
                 if (rank == 0 && logg->PRINT_INFO > 1)
                     printf("Iteration %d: rel. error: %02.13f\n", ii, logg->blockPower_trace_error);
 
-                if (logg->blockPower_trace_error <= logg->toll) break;
+                if (logg->blockPower_trace_error <= logg->tol) break;
                 
             } else if (logg->blockPower_conv_crit == 1) {
                 converged = 0;
                 for (jj = 0; jj < logg->NSV; jj++) 
-                    if (fabs((SING_VALUES[jj] - SING_VALUES_OLD[jj]) / SING_VALUES[jj]) <= logg->toll)
+                    if (fabs((SING_VALUES[jj] - SING_VALUES_OLD[jj]) / SING_VALUES[jj]) <= logg->tol)
                         converged++;
                 if (rank == 0 && logg->PRINT_INFO > 1) 
                     printf("Iteration %d: %d converged\n", ii, converged);
@@ -1052,7 +1052,7 @@ void BlockSubspaceIter_MPI_OOC_double_buffering(const char* bedfile, double *RHS
                 if (rank == 0 && logg->PRINT_INFO > 1)
                     printf("Iteration %d: MEV error: %02.13f\n", ii, mev_error);
                 
-                if (mev_error <= logg->toll) break;
+                if (mev_error <= logg->tol) break;
             }
         }
         

@@ -8,7 +8,7 @@ BFILE="sgdp.qc.pruned"
 NSV=20
 NRHS=40
 CONV_CRIT=2
-TOLL=1e-3
+TOL=1e-3
 BLOCKSIZE=100
 
 mpirun -np ${NP} ../../build/DistPCA.exe \
@@ -16,5 +16,5 @@ mpirun -np ${NP} ../../build/DistPCA.exe \
   -nsv ${NSV} \
   -nrhs ${NRHS} \
   -crit ${CONV_CRIT} \
-  -toll ${TOLL} \
+  -tol ${TOL} \
   -bsize ${BLOCKSIZE}
