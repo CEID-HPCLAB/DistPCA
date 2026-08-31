@@ -2,8 +2,6 @@
 
 source /opt/intel/oneapi/setvars.sh --force
 
-export ONEAPI_COMPILER=/opt/intel/oneapi/compiler/latest
-
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 BASE_DIR="$(cd -- "${SCRIPT_DIR}/../../../" && pwd)"
 PCAONE_DIR="${BASE_DIR}/PCAone"
