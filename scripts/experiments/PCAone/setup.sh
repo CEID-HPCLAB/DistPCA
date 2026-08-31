@@ -30,6 +30,7 @@ cd "${PCAONE_DIR}" || exit 1
 
 TARGET_FILE="${PCAONE_DIR}/src/Data.cpp"
 
+# To enable block-size configuration (# SNPs per block) via the --memory argument
 sed -i 's/if (params\.memory > 1\.1 \* m)/if (params.memory > m)/' "$TARGET_FILE"
 sed -i 's/blocksize = (unsigned int)ceil(/blocksize = (unsigned int)floor(/' "$TARGET_FILE"
 
