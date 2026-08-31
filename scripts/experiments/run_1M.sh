@@ -1,7 +1,10 @@
 #!/bin/bash
 
-source /opt/intel/oneapi/setvars.sh
+source /opt/intel/oneapi/setvars.sh --force
+
 export OMP_NUM_THREADS=8
+export OMP_PROC_BIND=true
+export OMP_PLACES=cores
 
 BFILE="1M_Genomes"
 NSV=20
