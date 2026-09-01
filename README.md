@@ -123,45 +123,84 @@ The three real-world datasets used in this work are the [1000 Genomes Project](h
 | **1000 Genomes** |
 ```bash
 # Download from figshare
-wget https://figshare.com/articles/dataset/1000_genomes_phase_3_files_with_SNPs_in_common_with_HapMap3/9208979
-unzip 1000G_phase3_common_SNPs.zip
-unzip 1000G_phase3_common_norel.zip
+wget -qO 1000G.zip "https://api.figshare.com/v2/articles/9208979/download"
+unzip -q 1000G.zip
+rm -f 1000G_phase3_common_norel.fam2
+unzip -q 1000G_phase3_common_norel.zip
 
-# Population ancestry panel (for coloring)
-wget https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/integrated_call_samples_v3.20130502.ALL.panel
+# Population ancestry panel (used to color populations in Figure 6)
+wget -q https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/integrated_call_samples_v3.20130502.ALL.panel
+mv integrated_call_samples_v3.20130502.ALL.panel ./docs/results/accuracy
 
 # Preprocessing
 plink --bfile 1000G_phase3_common_norel --maf 0.01 --make-bed --out 1000G.qc
 plink --bfile 1000G.qc --indep-pairwise 1000 50 0.2 --out 1000G.qc.prune
 plink --bfile 1000G.qc --extract 1000G.qc.prune.prune.in --make-bed --out 1000G.qc.pruned
+
+mv 1000G.qc.pruned.{bed,bim,fam} ./scripts/experiments
+
+# Clean up intermediate files
+rm -f 1000G.zip 1000G_phase3_common_norel.{zip,bed,bim,fam,log,fam2} 1000G.qc.* 1000G.qc.pruned.log 1000G-phase3-common-norel.R
 ```
+
+> [!NOTE]
+> The *1000 Genomes* dataset can also be downloaded by running [fetch_1000G.sh](./scripts/data/fetch_1000G.sh), located in `scripts/data/`. 
 
 | **Simons Genome Diversity Project (SGDP)** |
 ```bash
 # Download from Reich Lab
-wget https://sharehost.hms.harvard.edu/genetics/reich_lab/sgdp/variant_set/cteam_extended.v4.maf0.1perc.bed
-wget https://sharehost.hms.harvard.edu/genetics/reich_lab/sgdp/variant_set/cteam_extended.v4.maf0.1perc.bim.zip
-unzip cteam_extended.v4.maf0.1perc.bim.zip
-wget https://sharehost.hms.harvard.edu/genetics/reich_lab/sgdp/variant_set/cteam_extended.v4.maf0.1perc.fam
+URL="https://sharehost.hms.harvard.edu/genetics/reich_lab/sgdp/variant_set/cteam_extended.v4.maf0.1perc"
+wget -q "${URL}.bed"
+wget -q "${URL}.bim.zip"
+wget -q "${URL}.fam"
+
+unzip -q cteam_extended.v4.maf0.1perc.bim.zip
+rm cteam_extended.v4.maf0.1perc.bim.zip
 
 # Preprocessing
-plink --bfile sgdp --maf 0.01 --make-bed --out sgdp.qc
+plink --bfile cteam_extended.v4.maf0.1perc --maf 0.01 --make-bed --out sgdp.qc
 plink --bfile sgdp.qc --indep-pairwise 1000 50 0.2 --out sgdp.qc.prune
 plink --bfile sgdp.qc --extract sgdp.qc.prune.prune.in --make-bed --out sgdp.qc.pruned
+
+mv sgdp.qc.pruned.{bed,bim,fam} ./scripts/experiments
+
+# Clean up intermediate files
+rm -f cteam_extended.v4.maf0.1perc.{bed,bim,fam,log}
+rm -f sgdp.qc.{bed,bim,fam,log,hh,nosex}
+rm -f sgdp.qc.prune.*
+rm -f sgdp.qc.pruned.{log,hh,nosex}
 ```
+
+> [!NOTE]
+> The *SGDP* dataset can also be downloaded by running [fetch_SGDP.sh](./scripts/data/fetch_SGDP.sh), located in `scripts/data/`. 
 
 | **Human Genome Diversity Project (HGDP)** |
 ```bash
 # Download from Reich Lab
-wget -c https://reichdata.hms.harvard.edu/pub/datasets/humanOrigins/Harvard_HGDP-CEPH.tgz
-tar -xvzf Harvard_HGDP-CEPH.tgz
+wget -q https://reichdata.hms.harvard.edu/pub/datasets/humanOrigins/Harvard_HGDP-CEPH.tgz
+tar -xzf Harvard_HGDP-CEPH.tgz
 
 # Preprocessing
-plink --file all_snp --make-bed --out hgdp
+plink --file Harvard_HGDP-CEPH/all_snp --make-bed --out hgdp
 plink --bfile hgdp --maf 0.01 --make-bed --out hgdp.qc
 plink --bfile hgdp.qc --indep-pairwise 1000 50 0.2 --out hgdp.qc.prune
 plink --bfile hgdp.qc --extract hgdp.qc.prune.prune.in --make-bed --out hgdp.qc.pruned
+
+mv hgdp.qc.pruned.{bed,bim,fam} ./scripts/experiments/
+
+# Clean up intermediate files
+rm -f hgdp.{bed,bim,fam,log,hh}
+rm -f hgdp.qc.{bed,bim,fam,log,hh}
+rm -f hgdp.qc.prune.{prune.in,prune.out,log,hh}
+rm -f hgdp.qc.pruned.{log,hh}
+rm -rf Harvard_HGDP-CEPH*
 ```
+
+> [!NOTE]
+> The *ΗGDP* dataset can also be downloaded by running [fetch_ΗGDP.sh](./scripts/data/fetch_ΗGDP.sh), located in `scripts/data/`. 
+
+> [!WARNING]
+> After running the commands above, or the corresponding `.sh` script for each dataset, the resulting PLINK binary files (`.bed`, `.bim`, `.fam`) will be stored in `scripts/experiments/`.
 
 ---
 
@@ -193,7 +232,7 @@ Run:
 Two output files are generated: `output_file.map` (SNP information) and `output_file.ped` (individual genotypes).
 
 > [!WARNING]
-> Generating large datasets (e.g. 1M Individuals × 1M SNPs) requires significant disk space. It is recommended to generate data in parts and merge them into `.bed` format via PLINK, rather than producing a single large `.ped` file.
+> Generating large datasets (e.g., 1M Individuals × 1M SNPs) requires significant disk space. It is recommended to generate data in parts and merge them into `.bed` format via PLINK, rather than producing a single large `.ped` file.
 
 ## Performance Evaluation
 
@@ -283,12 +322,9 @@ python3 pop_structure.py    # Population structure (PC1 vs PC2) (Figure 6 in the
 
 ### Reproducing the reported results
 
-To reproduce the reported runtime results from scratch, first follow the [Datasets](#datasets) section to download and preprocess the real-world datasets and generate the synthetic ones. Once ready, move the `.bed`, `.bim`, and `.fam` files for each dataset under `scripts/experiments/` and run:
+To reproduce the reported runtime results from scratch, first follow the [Datasets](#datasets) section to download and preprocess the real-world datasets and generate the synthetic ones. Once ready, make sure that the `.bed`, `.bim`, and `.fam` files for each dataset are stored under `scripts/experiments/`, and run:
 
 ```bash
-# Move dataset files to scripts/experiments/
-mv <dataset>.bed <dataset>.bim <dataset>.fam scripts/experiments/
-
 cd scripts/experiments/
 
 bash run_1000G.sh
