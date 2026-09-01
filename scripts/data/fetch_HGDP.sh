@@ -31,13 +31,14 @@ wget -q -O "$RAW_TGZ" "$URL"
 
 tar -xzf "$RAW_TGZ" -C "${BASE_DIR}/experiments" > /dev/null 2>&1
 
+rm -f "$RAW_TGZ"
+
 plink \
     --file "$RAW_DIR/all_snp" \
     --make-bed \
     --out "$RAW_DATA" \
     > /dev/null
 
-rm -f "$RAW_TGZ"
 rm -rf "$RAW_DIR"
 
 echo "Applying MAF filter..."

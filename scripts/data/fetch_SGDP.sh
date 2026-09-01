@@ -61,7 +61,7 @@ plink \
 
 echo "Pruned dataset created at: ${PRUNED_DATA}"
 
-rm -f "$RAW_ZIP" "${RAW_DATA}".{zip,bed,bim,fam,log,fam2}
+rm -f "$RAW_ZIP" "${RAW_DATA}".{zip,bed,bim,fam}
 rm -f "${QC_DATA}".{bed,bim,fam,log,hh,nosex}
 rm -f "${QC_DATA}.prune".*
 rm -f "${PRUNED_DATA}".{log,hh,nosex}
