@@ -33,6 +33,10 @@ rm -f "1000G-phase3-common-norel.R"
 
 unzip -q "${RAW_DATA}.zip"
 
+wget -q https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/integrated_call_samples_v3.20130502.ALL.panel
+
+mv integrated_call_samples_v3.20130502.ALL.panel ${BASE_DIR}/../docs/results/accuracy
+
 echo "Applying MAF filter..."
 
 plink \
