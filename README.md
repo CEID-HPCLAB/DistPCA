@@ -197,7 +197,7 @@ rm -rf Harvard_HGDP-CEPH*
 ```
 
 > [!NOTE]
-> The *ΗGDP* dataset can also be downloaded by running [fetch_ΗGDP.sh](./scripts/data/fetch_ΗGDP.sh), located in `scripts/data/`. 
+> The *ΗGDP* dataset can also be downloaded by running [fetch_ΗGDP.sh](./scripts/data/fetch_HGDP.sh), located in `scripts/data/`. 
 
 > [!WARNING]
 > After running the commands above, or the corresponding `.sh` script for each dataset, the resulting PLINK binary files (`.bed`, `.bim`, `.fam`) will be stored in `scripts/experiments/`.
