@@ -325,6 +325,9 @@ python3 pop_structure.py    # Population structure (PC1 vs PC2) (Figure 6 in the
 To reproduce the reported runtime results from scratch, first follow the [Datasets](#datasets) section to download and preprocess the real-world datasets and generate the synthetic ones. Once ready, make sure that the `.bed`, `.bim`, and `.fam` files for each dataset are stored under `scripts/experiments/`, and run:
 
 ```bash
+# Move dataset files to scripts/experiments/
+mv <dataset>.bed <dataset>.bim <dataset>.fam scripts/experiments/
+
 cd scripts/experiments/
 
 bash run_1000G.sh
