@@ -156,7 +156,7 @@ rm -f 1000G.zip 1000G_phase3_common_norel.{zip,bed,bim,fam,log,fam2} 1000G.qc.* 
 ```
 
 > [!NOTE]
-> The *1000 Genomes* dataset can also be downloaded by running [fetch_1000G.sh](./scripts/data/fetch_1000G.sh), located in `scripts/data/`. 
+> The *1000 Genomes* dataset can also be downloaded and preprocessed by running [fetch_1000G.sh](./scripts/data/fetch_1000G.sh), located in `scripts/data/`. 
 
 **Simons Genome Diversity Project (SGDP) Dataset**
 ```bash
@@ -184,7 +184,7 @@ rm -f sgdp.qc.pruned.{log,hh,nosex}
 ```
 
 > [!NOTE]
-> The *SGDP* dataset can also be downloaded by running [fetch_SGDP.sh](./scripts/data/fetch_SGDP.sh), located in `scripts/data/`. 
+> The *SGDP* dataset can also be downloaded and preprocessed by running [fetch_SGDP.sh](./scripts/data/fetch_SGDP.sh), located in `scripts/data/`. 
 
 **Human Genome Diversity Project (HGDP) Dataset**
 ```bash
@@ -209,7 +209,7 @@ rm -rf Harvard_HGDP-CEPH*
 ```
 
 > [!NOTE]
-> The *ΗGDP* dataset can also be downloaded by running [fetch_ΗGDP.sh](./scripts/data/fetch_HGDP.sh), located in `scripts/data/`. 
+> The *ΗGDP* dataset can also be downloaded and preprocessed by running [fetch_ΗGDP.sh](./scripts/data/fetch_HGDP.sh), located in `scripts/data/`. 
 
 > [!WARNING]
 > After running the commands above, or the corresponding `.sh` script for each dataset, the resulting PLINK binary files (`.bed`, `.bim`, `.fam`) will be stored in `scripts/experiments/`.
@@ -281,7 +281,7 @@ A detailed overview of the ARIS infrastructure is available [here](https://doc.a
 
 ### Scalability
 
-DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** across all evaluated scenarios. As shown in the figures, the *SGDP* and *HGDP* datasets are omitted, as they complete in under 5 seconds even with 8 MPI ranks.
+DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** across all evaluated scenarios. As shown in the following figures, the *SGDP* and *HGDP* datasets are omitted, as they complete in under 5 seconds even with 8 MPI ranks.
 
 <br>
 <p align="center">
