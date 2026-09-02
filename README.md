@@ -15,8 +15,16 @@
 - [Prerequisites & Installation](#prerequisites--installation)
 - [Usage](#usage)
 - [Datasets](#datasets)
+  - [Real-World Datasets](#real-world-datasets)
+  - [Synthetic Datasets](#synthetic-datasets)
 - [Performance Evaluation](#performance-evaluation)
+  - [Experimental Setup](#experimental-setup)
+  - [Scalability](#scalability)
+  - [Comparison with PCAone](#comparison-with-pcaone)
 - [Reproducibility](#reproducibility)
+  - [Figures](#regenerating-the-figures)
+  - [Results](#reproducing-the-reported-results)
+  - [PCAone](#pcaone)
 - [File Structure](#file-structure)
 - [Planned Features](#planned-features)
 - [Citation](#citation)
@@ -32,17 +40,18 @@ cd DistPCA
 
 Install **Intel MKL** (Base Toolkit) and **Intel MPI + OpenMP** (HPC Toolkit), which provides the `mpicxx` and `mpicc` wrappers:
 ```bash
-wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+sudo wget -qO- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
 echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
 sudo apt update
 sudo apt install intel-basekit intel-hpckit
 ```
 
-Then initialize the environment and build:
+Then, initialize the environment and build:
 ```bash
 source /opt/intel/oneapi/setvars.sh
+
 make        # compile
-make clean  # remove build artifacts (if you want to re-build)
+make clean  # remove build artifacts before rebuilding
 ```
 
 The executable will be available at `build/DistPCA.exe`.
@@ -52,12 +61,12 @@ The executable will be available at `build/DistPCA.exe`.
 > [!IMPORTANT]
 > Before running `DistPCA`, make sure the Intel oneAPI environment is initialized with `source /opt/intel/oneapi/setvars.sh`
 
-Set the number of **OpenMP threads** to be used per MPI process:
+Set the number of **OpenMP threads** per MPI process:
 ```bash
 export OMP_NUM_THREADS=<num_threads>
 ```
 
-Once compiled, run `DistPCA` from the build directory:
+After compilation, run `DistPCA` from the repository root:
 ```bash
 mpirun -np <num_processes> ./build/DistPCA.exe \
   -bfile <file_path> \
@@ -99,12 +108,15 @@ mpirun -np <num_processes> ./build/DistPCA.exe \
 The datasets used in this research consist of three real-world and three synthetic datasets. Real-world datasets require preprocessing with [PLINK](https://www.cog-genomics.org/plink/), which can be installed as follows:
 
 ```bash
-wget https://s3.amazonaws.com/plink1-assets/plink_linux_x86_64_20231211.zip
-unzip plink_linux_x86_64_20231211.zip
-sudo mv plink /usr/local/bin/
-```
+# Download and install PLINK
+wget -q https://s3.amazonaws.com/plink1-assets/plink_linux_x86_64_20231211.zip
+unzip -q plink_linux_x86_64_20231211.zip -d plink_tmp
+sudo mv plink_tmp/plink /usr/local/bin/
 
----
+# Clean up intermediate files
+rm -rf plink_tmp
+rm -f plink_linux_x86_64_20231211.zip
+```
 
 ### Real-World Datasets
 
@@ -120,7 +132,7 @@ The three real-world datasets used in this work are the [1000 Genomes Project](h
 <br>
 
 
-| **1000 Genomes** |
+**1000 Genomes Dataset** 
 ```bash
 # Download from figshare
 wget -qO 1000G.zip "https://api.figshare.com/v2/articles/9208979/download"
@@ -146,7 +158,7 @@ rm -f 1000G.zip 1000G_phase3_common_norel.{zip,bed,bim,fam,log,fam2} 1000G.qc.* 
 > [!NOTE]
 > The *1000 Genomes* dataset can also be downloaded by running [fetch_1000G.sh](./scripts/data/fetch_1000G.sh), located in `scripts/data/`. 
 
-| **Simons Genome Diversity Project (SGDP)** |
+**Simons Genome Diversity Project (SGDP) Dataset**
 ```bash
 # Download from Reich Lab
 URL="https://sharehost.hms.harvard.edu/genetics/reich_lab/sgdp/variant_set/cteam_extended.v4.maf0.1perc"
@@ -174,7 +186,7 @@ rm -f sgdp.qc.pruned.{log,hh,nosex}
 > [!NOTE]
 > The *SGDP* dataset can also be downloaded by running [fetch_SGDP.sh](./scripts/data/fetch_SGDP.sh), located in `scripts/data/`. 
 
-| **Human Genome Diversity Project (HGDP)** |
+**Human Genome Diversity Project (HGDP) Dataset**
 ```bash
 # Download from Reich Lab
 wget -q https://reichdata.hms.harvard.edu/pub/datasets/humanOrigins/Harvard_HGDP-CEPH.tgz
@@ -201,8 +213,6 @@ rm -rf Harvard_HGDP-CEPH*
 
 > [!WARNING]
 > After running the commands above, or the corresponding `.sh` script for each dataset, the resulting PLINK binary files (`.bed`, `.bim`, `.fam`) will be stored in `scripts/experiments/`.
-
----
 
 ### Synthetic Datasets
 
@@ -232,13 +242,15 @@ Then, run:
 This generates two output files: `output_file.map` (SNP information) and `output_file.ped` (individual genotypes).
 
 > [!WARNING]
-> Generating large datasets (e.g., 1M Individuals × 1M SNPs) requires significant disk space. It is recommended to generate data in parts and merge them into `.bed` format via PLINK, rather than producing a single large `.ped` file.
+> Generating large datasets (e.g., 1M individuals × 1M SNPs) may require substantial disk space due to the size of the resulting text-based `.ped` file. For large-scale datasets, it is recommended to generate the data in parts and merge the resulting files into PLINK binary format (`.bed`, `.bim`, `.fam`) using PLINK, rather than generating a single large `.ped` file.
 
 ## Performance Evaluation
 
+The performance of DistPCA was evaluated on **three** synthetic datasets and **three** publicly available real-world datasets of varying sizes, as described in Section [Datasets](#datasets). Throughout all experiments, the underlying Randomized Subspace Iteration (RSI) method targets the leading $k \coloneqq 20$ PCs, starting from an initial approximation subspace of dimension $2k$, with a fixed block size of **100** SNPs. Convergence is determined via the mean explained variance (**MEV**) of eigenvectors, a metric for evaluating the quality of estimated PCs, and the RSI algorithm stops when the difference of eigenvectors between two successive iterations falls below a threshold of $10^{-3}$ ($1-\mathrm{MEV}<10^{-3}$).   
+
 ### Experimental Setup
 
-All experiments were conducted on the [ARIS supercomputer](https://www.hpc.grnet.gr/en/), a national Greek HPC cluster facility, using four thin compute nodes. Each thin node is partitioned into eight Non-Uniform Memory Access (NUMA) domains and is configured as follows:
+The experiments were conducted on the [ARIS supercomputer](https://www.hpc.grnet.gr/en/), a national Greek HPC cluster facility, using four thin compute nodes. Each thin node is partitioned into eight Non-Uniform Memory Access (NUMA) domains and is configured as follows:
 
 | Component| Details |
 |:---:|:---:|
@@ -251,7 +263,10 @@ A detailed overview of the ARIS infrastructure is available [here](https://doc.a
 > [!NOTE]
 > MPI ranks were distributed across NUMA domains, with OpenMP threads pinned to cores within each domain and fixed to **8** per rank throughout all experiments. Hyperthreading was disabled and MKL routines were accessed via `Intel oneAPI (v2025.0.1)`.
 
-### Results
+> [!NOTE]
+> To further evaluate the scalability of DistPCA across different computing environments, additional experiments were conducted on **ATHENA**, a CPU server with two nodes, each equipped with a dual-socket Intel Xeon Gold 6430 CPU (32 cores, 2.1 GHz) and 126 GB of RAM. Unless otherwise specified, the reported results were obtained on the [ARIS supercomputer](https://www.hpc.grnet.gr/en/).
+
+### Scalability
 
 DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** across all evaluated scenarios. As shown in the figures, the *SGDP* and *HGDP* datasets are omitted, as they complete in under 5 seconds even with 8 MPI ranks.
 
@@ -263,7 +278,7 @@ DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2
     <img src = "docs/figures/Fig1_light.png" width = "95%" alt = "Runtime Performance of DistPCA across four distinct datasets">
   </picture>
   <br>
-  <em>Figure 1: Runtime performance</em>
+  <em>Figure 1: Runtime performance on the <a href="https://www.hpc.grnet.gr/en/">ARIS supercomputer</a></em>
 </p>
 
 <br>
@@ -278,7 +293,7 @@ DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2
 </p>
 
 
-These performance gains are achieved while preserving the accuracy of the recovered PCs, as shown in the following figures.
+These performance gains are achieved while preserving the accuracy of the recovered PCs, as illustrated in the following figures.
 
 <p align="center">
   <picture>
@@ -292,7 +307,7 @@ These performance gains are achieved while preserving the accuracy of the recove
 
 ### Comparison with PCAone
 
-As shown in the following table, *DistPCA* consistently outperforms *PCAone* [[1](https://genome.cshlp.org/content/early/2023/10/05/gr277525122), [2](https://github.com/Zilong-Li/PCAone)], the current state-of-the-art method for large-scale genomic PCA, across all datasets.
+As observed from the following table, DistPCA consistently outperforms PCAone [[1](https://genome.cshlp.org/content/early/2023/10/05/gr277525122), [2](https://github.com/Zilong-Li/PCAone)], the current state-of-the-art solution for large-scale genomic PCA, across all datasets.
 
 | Dataset        | PCAone | DistPCA | Speedup | Reduction % |
 |:---------------:|:-------:|:--------:|:--------:|:------------:|
@@ -301,9 +316,12 @@ As shown in the following table, *DistPCA* consistently outperforms *PCAone* [[1
 | 500K Genomes   | 12.1h  |  **2.3h** |   5.26x |       78.5% |
 | 1M Genomes     |  7.9h  |  **2.6h** |   3.04x |       67.9% |
 
+> [!IMPORTANT]
+> PCAone was employed with the window-based Randomized SVD (RSVD) method proposed in [[1](https://genome.cshlp.org/content/early/2023/10/05/gr277525122)] to compute the **20** leading PCs, while the same stopping criterion was used for both frameworks ($1-\mathrm{MEV}<10^{-3}$). The total number of worker threads was fixed to **64** across all experiments. Moreover, since PCAone does not directly support specifying the number of SNPs per block, we adjusted the `--memory` argument for each dataset to ensure that its window-based RSVD method processed blocks of **100** SNPs. All other PCAone parameters were set to their default values.
+
 ## Reproducibility
 
-### Regenerating the figures
+### Regenerating the Figures
 
 All precomputed results from the conducted experiments are available [here](./docs/results/). To regenerate the figures directly from these outputs, run:
 
@@ -320,12 +338,12 @@ python3 rel_error.py        # Entry-wise relative error of eigenvectors (Figure 
 python3 pop_structure.py    # Population structure (PC1 vs PC2) (Figure 6 in the paper)
 ``` 
 
-### Reproducing the reported results
+### Reproducing the Reported Results
 
-To reproduce the reported runtime results from scratch, first follow the [Datasets](#datasets) section to download and preprocess the real-world datasets and generate the synthetic ones. Once ready, make sure that the `.bed`, `.bim`, and `.fam` files for each dataset are stored under `scripts/experiments/`, and run:
+To reproduce the reported runtime results from scratch, first follow the [Datasets](#datasets) Section to download and preprocess the real-world datasets and generate the synthetic ones. Once ready, make sure that the `.bed`, `.bim`, and `.fam` files for each dataset are stored under `scripts/experiments/`, and run:
 
 ```bash
-# Move dataset files to scripts/experiments/
+# Move dataset files to scripts/experiments/ if not already there
 mv <dataset>.bed <dataset>.bim <dataset>.fam scripts/experiments/
 
 cd scripts/experiments/
@@ -336,7 +354,7 @@ bash run_500K.sh
 bash run_1M.sh
 ```
 > [!NOTE]
-> After executing the above scripts, the wall-clock time results for each worker configuration will be stored in the `/docs/results/runtime` directory in separate `.txt` files, one per dataset. 
+> After executing the above scripts, the wall-clock time results for each worker configuration will be stored in the `docs/results/runtime/` directory in separate `.txt` files, one per dataset. 
 > 
 > By running the corresponding Python plot scripts located under `scripts/plots/` ([runtime.py](./scripts/plots/runtime.py), [speedup.py](./scripts/plots/speedup.py)), Figures 3 and 4 of the paper can be generated.
 
@@ -346,7 +364,7 @@ bash run_1M.sh
 > [!WARNING]
 > Experiments were conducted on the [ARIS supercomputer](https://www.hpc.grnet.gr/en/) using four thin compute nodes. Wall-clock time results may exhibit slight variations depending on cluster infrastructure, node availability, and storage system.
 
-To reproduce the reported accuracy results from scratch, after downloading the *1000 Genomes* dataset and moving it to `scripts/experiments/`, run:
+To reproduce the reported accuracy results from scratch, after downloading the *1000 Genomes* dataset and moving it to `scripts/experiments/` (see Section [Datasets](#datasets)), run:
 
 ```bash
 cd scripts/experiments/
@@ -354,13 +372,46 @@ bash run_1000G_accuracy.sh
 ```
 
 > [!NOTE]
-> After executing the above script, the eigenvalues and corresponding eigenvectors computed by *DistPCA* will be stored in the `/docs/results/accuracy` directory in separate `.txt` files. For reference, eigenvalues and eigenvectors computed via full SVD using *LAPACKE* are also stored in the same directory in a separate file.
+> After executing the above script, the eigenvalues and corresponding eigenvectors computed by DistPCA will be stored in the `docs/results/accuracy/` directory in separate `.txt` files. For reference, eigenvalues and eigenvectors computed via full SVD using *LAPACKE* are also stored in the same directory in a separate file.
 >
 > By running the corresponding Python plotting scripts located under `scripts/plots/` ([rel_error.py](./scripts/plots/rel_error.py), [pop_structure.py](./scripts/plots/pop_structure.py)), Figures 5 and 6 of the paper can be generated.
 
 > [!CAUTION]
 > The execution of `run_1000G_accuracy.sh` includes the in-core computation of PCs via full SVD, which requires the entire dataset to be loaded into main memory in uncompressed form. For computing the PCs using LAPACKE's [dgesvd](https://netlib.org/lapack/explore-html//d1/d7f/group__gesvd_gac6bd5d4e645049e49bb70691180abf07.html), at least 105 GB of available RAM is required.
 
+### PCAone
+To reproduce the reported results for the PCAone framework (Table 3 in the paper), first run the [setup.sh](./scripts/experiments/PCAone/setup.sh) script from `scripts/experiments/PCAone/`:
+```bash
+cd scripts/experiments/PCAone/
+bash setup.sh
+```
+The script clones the [PCAone repository](https://github.com/Zilong-Li/PCAone) and builds the PCAone framework using Intel oneAPI.
+
+Then, use the [run.sh](./scripts/experiments/PCAone/run.sh) script, located in `scripts/experiments/PCAone/`, to run PCAone and compute the leading PCs for the *1000*, *50K*, *500K*, *1M Genomes* datasets:
+```bash
+cd scripts/experiments/PCAone/
+
+# 1000 Genomes dataset  
+bash run.sh 1000
+
+# 50K Genomes dataset
+bash run.sh 50K
+
+# 500K Genomes dataset
+bash run.sh 500K
+
+# 1M Genomes dataset
+bash run.sh 1M
+```
+
+> [!TIP]
+> Upon completion for each dataset, PCAone reports the elapsed runtime in seconds to `stdout`.
+
+> [!NOTE]
+> The script is configured to run PCAone with the parameters described in the [Comparison with PCAone](#comparison-with-pcaone) subsection. Specifically, PCAone uses the window-based RSVD method proposed in [[1](https://genome.cshlp.org/content/early/2023/10/05/gr277525122)] to compute the **20** leading PCs, with $1-\mathrm{MEV}<10^{-3}$ as the stopping criterion. All experiments are performed using **64** OpenMP threads, with the window-based RSVD method processing blocks of **100** SNPs. All remaining PCAone parameters are set to their default values.
+
+> [!IMPORTANT]
+> When `run.sh` is executed without a dataset argument, PCAone automatically runs across all four datasets.
 
 ## File Structure
 ```
@@ -372,8 +423,10 @@ DistPCA/
 │       └── accuracy/       # Evaluation results for computed PCs (Figures 5 and 6 of the paper)
 │
 ├── scripts/
+│   ├── data/               # Scripts for downloading and preprocessing real-world datasets
 │   ├── plots/              # Scripts to reproduce all figures
 │   └── experiments/        # Scripts for running all experiments
+│       └── PCAone/         # Scripts for installing, building, and reproducing PCAone experiments
 │
 ├── src/                    # Core implementation of DistPCA
 ├── example/                # Toy dataset for testing and demonstration
@@ -383,8 +436,9 @@ DistPCA/
 
 ## Planned Features
 
-- [ ] Improve the API documentation
+- [X] Improve the API documentation
 - [ ] Provide a Python API
+- [ ] Support additional genetic data formats (e.g., PLINK2 binary fileset)
 - [ ] Integrate multi-GPU support
 - [ ] Support alternative out-of-core methods for PCs approximation
 
