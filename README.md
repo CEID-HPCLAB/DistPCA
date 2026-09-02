@@ -216,7 +216,7 @@ The three synthetic datasets used in this work are:
 
 <br>
 
-Synthetic datasets are generated using [DataSimulator](https://github.com/eugeniamaria/DataSimulator). Install dependencies and build:
+Synthetic datasets can be generated using [DataSimulator](https://github.com/eugeniamaria/DataSimulator). First, install the required dependencies and build:
 
 ```bash
 sudo apt-get install libboost-all-dev libgsl-dev
@@ -224,12 +224,12 @@ git clone https://github.com/eugeniamaria/DataSimulator.git
 cd DataSimulator && make
 ```
 
-Run:
+Then, run:
 ```bash
 ./GeneticDataSimulator -npop [int] -nregions [int] -nindividuals [int] -nSNP [int] -minfreq [double] -txtoutput [int] -filename [char]
 ```
 
-Two output files are generated: `output_file.map` (SNP information) and `output_file.ped` (individual genotypes).
+This generates two output files: `output_file.map` (SNP information) and `output_file.ped` (individual genotypes).
 
 > [!WARNING]
 > Generating large datasets (e.g., 1M Individuals × 1M SNPs) requires significant disk space. It is recommended to generate data in parts and merge them into `.bed` format via PLINK, rather than producing a single large `.ped` file.
