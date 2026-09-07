@@ -24,16 +24,19 @@
 #include "structures.h"
 #include <string>
 #include <sstream>
-#include <immintrin.h>
 #include "utilities.h"
 
 // Detect architecture and include appropriate BLAS/LAPACK headers
 #if defined(__x86_64__) || defined(_M_X64)
     #include "mkl.h"
     #include "mkl_lapacke.h"
+    #include <immintrin.h>
+    #define DECODE_SSE2
 #elif defined(__aarch64__) || defined(__arm__) || defined(__ARM_ARCH) || defined(arm64)
     #include <cblas.h>
     #include <lapacke.h>
+    #include <arm_neon.h>
+    #define DECODE_NEON
 #else
     #error "Unsupported architecture: please define BLAS/LAPACK backend for this platform."
 #endif
@@ -96,15 +99,30 @@ int GetRamInKB(void)
 }
 
 int get_llc_size_kb(void) {
+#if defined(__APPLE__) || defined(__MACH__)
+    int64_t bytes = 0;
+    size_t  len   = sizeof(bytes);
+    /* Intel Macs have L3; Apple Silicon has no L3, so fall back to L2. */
+    if (sysctlbyname("hw.l3cachesize", &bytes, &len, NULL, 0) == 0 && bytes > 0)
+        return (int)(bytes / 1024);
+    len = sizeof(bytes);
+    if (sysctlbyname("hw.perflevel0.l2cachesize", &bytes, &len, NULL, 0) == 0 && bytes > 0)
+        return (int)(bytes / 1024);
+    len = sizeof(bytes);
+    if (sysctlbyname("hw.l2cachesize", &bytes, &len, NULL, 0) == 0 && bytes > 0)
+        return (int)(bytes / 1024);
+    return -1;
+#else
     FILE *fp = fopen("/sys/devices/system/cpu/cpu0/cache/index3/size", "r");
     if (!fp) return -1;
-    
+
     int llc_kb;
     int ret = fscanf(fp, "%dK", &llc_kb);
     fclose(fp);
-    
+
     if (ret != 1) return -1;
     return llc_kb;
+#endif
 }
 
 std::string ExtractFileName(const std::string& fullPath){
@@ -329,10 +347,13 @@ string timestamp(struct logistics *logg){
       return  string("");
 }
 
+/* it is named sse2 but also supported the NEON extension */
 void decode_plink_sse2(uint8_t* __restrict out, const uint8_t* __restrict in, unsigned n)
 {
+    static const uint8_t LUT[4] = {0, 3, 1, 2};
     unsigned i = 0;
-    
+
+#if defined(DECODE_SSE2)
     const __m128i lut = _mm_setr_epi8(0,3,1,2, 0,3,1,2, 0,3,1,2, 0,3,1,2);
     const __m128i mask02 = _mm_set1_epi8(0x03);
 
@@ -355,32 +376,50 @@ void decode_plink_sse2(uint8_t* __restrict out, const uint8_t* __restrict in, un
         __m128i o2 = _mm_unpacklo_epi16(p1, p3);
         __m128i o3 = _mm_unpackhi_epi16(p1, p3);
 
-        __m128i m0 = _mm_shuffle_epi8(lut, o0);
-        __m128i m1 = _mm_shuffle_epi8(lut, o1);
-        __m128i m2 = _mm_shuffle_epi8(lut, o2);
-        __m128i m3 = _mm_shuffle_epi8(lut, o3);
-
-        _mm_storeu_si128((__m128i*)(out + i * 4 +  0), m0);
-        _mm_storeu_si128((__m128i*)(out + i * 4 + 16), m1);
-        _mm_storeu_si128((__m128i*)(out + i * 4 + 32), m2);
-        _mm_storeu_si128((__m128i*)(out + i * 4 + 48), m3);
+        _mm_storeu_si128((__m128i*)(out + i * 4 +  0), _mm_shuffle_epi8(lut, o0));
+        _mm_storeu_si128((__m128i*)(out + i * 4 + 16), _mm_shuffle_epi8(lut, o1));
+        _mm_storeu_si128((__m128i*)(out + i * 4 + 32), _mm_shuffle_epi8(lut, o2));
+        _mm_storeu_si128((__m128i*)(out + i * 4 + 48), _mm_shuffle_epi8(lut, o3));
     }
+
+#elif defined(DECODE_NEON)
+    const uint8x16_t lut = vreinterpretq_u8_u32(vdupq_n_u32(
+        (uint32_t)LUT[0]        | ((uint32_t)LUT[1] << 8) |
+        ((uint32_t)LUT[2] << 16) | ((uint32_t)LUT[3] << 24)));
+    const uint8x16_t mask02 = vdupq_n_u8(0x03);
+
+    for (; i + 16 <= n; i += 16)
+    {
+        uint8x16_t x = vld1q_u8(in + i);
+
+        uint8x16x4_t v;
+        v.val[0] = vqtbl1q_u8(lut, vandq_u8(x, mask02));
+        v.val[1] = vqtbl1q_u8(lut, vandq_u8(vshrq_n_u8(x, 2), mask02));
+        v.val[2] = vqtbl1q_u8(lut, vandq_u8(vshrq_n_u8(x, 4), mask02));
+        v.val[3] = vqtbl1q_u8(lut, vshrq_n_u8(x, 6));
+
+        vst4q_u8(out + i * 4, v);
+    }
+#endif
 
     for (; i < n; i++)
     {
         uint8_t b = in[i];
         unsigned base = i * 4;
-        out[base+0] = (uint8_t[4]){0,3,1,2}[(b >> 0) & 3];
-        out[base+1] = (uint8_t[4]){0,3,1,2}[(b >> 2) & 3];
-        out[base+2] = (uint8_t[4]){0,3,1,2}[(b >> 4) & 3];
-        out[base+3] = (uint8_t[4]){0,3,1,2}[(b >> 6) & 3];
+        out[base+0] = LUT[(b >> 0) & 3];
+        out[base+1] = LUT[(b >> 2) & 3];
+        out[base+2] = LUT[(b >> 4) & 3];
+        out[base+3] = LUT[(b >> 6) & 3];
     }
 }
 
+/* it is named sse2 but also supported the NEON extension */
 void decode_plink_precomp_sse2(uint8_t* __restrict out, const uint8_t* __restrict in, unsigned n)
 {
+    static const uint8_t LUT[4] = {3, 1, 2, 0};
     unsigned i = 0;
-    
+
+#if defined(DECODE_SSE2)
     const __m128i lut = _mm_setr_epi8(3,1,2,0, 3,1,2,0, 3,1,2,0, 3,1,2,0);
     const __m128i mask02 = _mm_set1_epi8(0x03);
 
@@ -403,25 +442,40 @@ void decode_plink_precomp_sse2(uint8_t* __restrict out, const uint8_t* __restric
         __m128i o2 = _mm_unpacklo_epi16(p1, p3);
         __m128i o3 = _mm_unpackhi_epi16(p1, p3);
 
-        __m128i m0 = _mm_shuffle_epi8(lut, o0);
-        __m128i m1 = _mm_shuffle_epi8(lut, o1);
-        __m128i m2 = _mm_shuffle_epi8(lut, o2);
-        __m128i m3 = _mm_shuffle_epi8(lut, o3);
-
-        _mm_storeu_si128((__m128i*)(out + i * 4 +  0), m0);
-        _mm_storeu_si128((__m128i*)(out + i * 4 + 16), m1);
-        _mm_storeu_si128((__m128i*)(out + i * 4 + 32), m2);
-        _mm_storeu_si128((__m128i*)(out + i * 4 + 48), m3);
+        _mm_storeu_si128((__m128i*)(out + i * 4 +  0), _mm_shuffle_epi8(lut, o0));
+        _mm_storeu_si128((__m128i*)(out + i * 4 + 16), _mm_shuffle_epi8(lut, o1));
+        _mm_storeu_si128((__m128i*)(out + i * 4 + 32), _mm_shuffle_epi8(lut, o2));
+        _mm_storeu_si128((__m128i*)(out + i * 4 + 48), _mm_shuffle_epi8(lut, o3));
     }
+
+#elif defined(DECODE_NEON)
+    const uint8x16_t lut = vreinterpretq_u8_u32(vdupq_n_u32(
+        (uint32_t)LUT[0]        | ((uint32_t)LUT[1] << 8) |
+        ((uint32_t)LUT[2] << 16) | ((uint32_t)LUT[3] << 24)));
+    const uint8x16_t mask02 = vdupq_n_u8(0x03);
+
+    for (; i + 16 <= n; i += 16)
+    {
+        uint8x16_t x = vld1q_u8(in + i);
+
+        uint8x16x4_t v;
+        v.val[0] = vqtbl1q_u8(lut, vandq_u8(x, mask02));
+        v.val[1] = vqtbl1q_u8(lut, vandq_u8(vshrq_n_u8(x, 2), mask02));
+        v.val[2] = vqtbl1q_u8(lut, vandq_u8(vshrq_n_u8(x, 4), mask02));
+        v.val[3] = vqtbl1q_u8(lut, vshrq_n_u8(x, 6));
+
+        vst4q_u8(out + i * 4, v);
+    }
+#endif
 
     for (; i < n; i++)
     {
         uint8_t b = in[i];
         unsigned base = i * 4;
-        out[base+0] = (uint8_t[4]){3,1,2,0}[(b >> 0) & 3];
-        out[base+1] = (uint8_t[4]){3,1,2,0}[(b >> 2) & 3];
-        out[base+2] = (uint8_t[4]){3,1,2,0}[(b >> 4) & 3];
-        out[base+3] = (uint8_t[4]){3,1,2,0}[(b >> 6) & 3];
+        out[base+0] = LUT[(b >> 0) & 3];
+        out[base+1] = LUT[(b >> 2) & 3];
+        out[base+2] = LUT[(b >> 4) & 3];
+        out[base+3] = LUT[(b >> 6) & 3];
     }
 }
 

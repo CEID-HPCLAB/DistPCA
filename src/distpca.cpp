@@ -36,6 +36,8 @@
 #elif defined(__aarch64__) || defined(__arm__) || defined(__ARM_ARCH) || defined(arm64)
     #include <cblas.h>
     #include <lapacke.h>
+    #include <cstring>
+    extern "C" void openblas_set_num_threads(int);
 #else
     #error "Unsupported architecture: please define BLAS/LAPACK backend for this platform."
 #endif
@@ -51,7 +53,12 @@ int main(int argc, char **argv){
     int threads_per_rank = omp_get_max_threads();         
     
     if (threads_per_rank < 1) threads_per_rank = 1;
+#if defined(__x86_64__) || defined(_M_X64)
     mkl_set_num_threads(threads_per_rank);
+#else
+    openblas_set_num_threads(threads_per_rank);
+    omp_set_num_threads(threads_per_rank);
+#endif
 
     double tt1, tt2; int ii, jj, kk;
     
@@ -466,7 +473,19 @@ int main(int argc, char **argv){
         Read_Bed_Local(bedin, MAT, &logg);
       }
 
+      #if defined(__x86_64__) || defined(_M_X64)
       mkl_dimatcopy('R','T', logg.N, logg.M, fone, MAT, logg.M, logg.N);
+#else
+      {
+          const size_t _n = (size_t)logg.N, _m = (size_t)logg.M;
+          double *_T = (double*)malloc(_n * _m * sizeof(double));
+          for (size_t _i = 0; _i < _n; ++_i)
+              for (size_t _j = 0; _j < _m; ++_j)
+                  _T[_j * _n + _i] = MAT[_i * _m + _j];
+          memcpy(MAT, _T, _n * _m * sizeof(double));
+          free(_T);
+      }
+#endif
 
       double tt1 = dsecnd();
 
