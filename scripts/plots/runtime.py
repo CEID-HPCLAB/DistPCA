@@ -56,7 +56,7 @@ plt.rcParams['text.color'] = 'white'; plt.rcParams['axes.labelcolor'] = 'white';
 
 # plt.rcParams['text.color'] = 'black'; plt.rcParams['axes.labelcolor'] = 'black'; plt.rcParams['xtick.color'] = 'black'; plt.rcParams['ytick.color'] = 'black'
 
-fig, axes = plt.subplots(1, len(datasets), figsize=(14, 3.15), sharey=False, dpi=600)
+fig, axes = plt.subplots(1, len(datasets), figsize = (14, 3.15), sharey = False, dpi = 600)
 
 for ax, (name, times) in zip(axes, datasets.items()):
     color = DATASET_COLORS[name]
