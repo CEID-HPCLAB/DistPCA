@@ -1,0 +1,51 @@
+name: linux-ci
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  linux-x86_64:
+    name: linux-x86_64
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: sys-deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            openmpi-bin \
+            libopenmpi-dev \
+            wget \
+            gpg
+
+      - name: oneapi-configure
+        run: |
+          wget -qO- https://apt.repos.intel.com/oneapi/gpgkey \
+            | gpg --dearmor \
+            | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" \
+            | sudo tee /etc/apt/sources.list.d/oneAPI.list
+
+          sudo apt-get update
+
+      - name: oneapi-install
+        run: |
+          sudo apt-get install -y \
+            intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic \
+            intel-oneapi-mkl-devel
+
+      - name: build
+        shell: bash
+        run: |
+          source /opt/intel/oneapi/setvars.sh
+          make
