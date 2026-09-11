@@ -9,7 +9,7 @@
 [![bioRxiv](https://img.shields.io/badge/bioRxiv-2607.16478-b31b1b.svg)](https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1.full)  <br>
 ![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=flat&logo=c%2B%2B&logoColor=white)
 ![HPC](https://img.shields.io/badge/HPC-71797E?style=flat&logo=dna&logoColor=white)
-![Distributed Computing](https://img.shields.io/badge/Distributed%20Computing-E91E8C?style=flat&logo=apachehadoop&logoColor=white)
+![Distributed Computing](https://img.shields.io/badge/Distributed%20Computing-E91E8C?style=flat)
 ![Bioinformatics](https://img.shields.io/badge/Bioinformatics-228B22?style=flat&logo=dna&logoColor=white)
 
 
@@ -17,6 +17,8 @@
 
 ## Table of Contents
 - [Prerequisites & Installation](#prerequisites--installation)
+  - [Linux (x86_64)](#linux-x86_64)
+  - [macOS (ARM64)](#macos-arm64)
 - [Usage](#usage)
 - [Datasets](#datasets)
   - [Real-World Datasets](#real-world-datasets)
@@ -42,7 +44,17 @@ git clone https://github.com/CEID-HPCLAB/DistPCA.git
 cd DistPCA
 ```
 
-Install **Intel MKL** (Base Toolkit) and **Intel MPI + OpenMP** (HPC Toolkit), which provides the `mpicxx` and `mpicc` wrappers:
+Before building the project, ensure that the following prerequisites are installed:
+
+1. A GCC or Clang compiler with C++11 support
+2. GNU Make
+
+> [!IMPORTANT]
+> DistPCA has been [tested](./.github/workflows/) and is supported on both **Linux (x86_64)** and **macOS (ARM64)** computing platforms.
+
+### Linux (x86_64)
+
+First, install **Intel MKL** (Base Toolkit) and **Intel MPI + OpenMP** (HPC Toolkit). The latter provides the `mpicxx` and `mpicc` wrappers:
 ```bash
 sudo wget -qO- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
 echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
@@ -50,7 +62,7 @@ sudo apt update
 sudo apt install intel-basekit intel-hpckit
 ```
 
-Then, initialize the environment and build:
+Then, initialize the environment and build the project:
 ```bash
 source /opt/intel/oneapi/setvars.sh
 
@@ -58,12 +70,29 @@ make        # compile
 make clean  # remove build artifacts before rebuilding
 ```
 
-The executable will be available at `build/DistPCA.exe`.
+### macOS (ARM64)
+
+First, install **Homebrew** if it is not already installed. Then, install the required dependencies (Open MPI, OpenMP, and OpenBLAS):
+```bash
+# Install Homebrew if it is not already installed
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+brew install open-mpi libomp openblas
+```
+
+After installing the required dependencies, build the project:
+```bash
+make        # compile
+make clean  # remove build artifacts before rebuilding
+```
+
+> [!IMPORTANT]
+> In both cases, the executable will be available at `build/DistPCA.exe`.
 
 ## Usage
 
 > [!IMPORTANT]
-> Before running `DistPCA`, make sure the Intel oneAPI environment is initialized with `source /opt/intel/oneapi/setvars.sh`
+> Before running `DistPCA` with the Intel MKL backend, make sure the Intel oneAPI environment is initialized with:`source /opt/intel/oneapi/setvars.sh`
 
 Set the number of **OpenMP threads** per MPI process:
 ```bash
