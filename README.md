@@ -13,7 +13,7 @@
 ![Bioinformatics](https://img.shields.io/badge/Bioinformatics-228B22?style=flat&logo=dna&logoColor=white)
 
 
-**DistPCA** is a distributed out-of-core C++ framework for tera-scale genomic Principal Component Analysis (PCA), designed to scale efficiently across both single- and multi-node computing systems. Built on top of **Message Passing Interface (MPI)**, it employs a hybrid multi-level parallelism scheme combining **multiprocessing**, **OpenMP multithreading**, **SIMD vectorization**, and **double buffering** across all three stages of the PCA pipeline (I/O, data preprocessing, numerical method). Evaluated on datasets reaching up to 11 TB, DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** and preserving the accuracy of the recovered principal components (PCs). For a detailed description of the framework and experimental evaluation, please refer to our [preprint](https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1).
+**DistPCA** is a distributed out-of-core C++ framework for tera-scale genomic Principal Component Analysis (PCA), designed to scale efficiently across both single- and multi-node computing environments. Built on top of **Message Passing Interface (MPI)**, it employs a hybrid multi-level parallelism scheme combining **multiprocessing**, **OpenMP multithreading**, **SIMD vectorization**, and **double buffering** across all three stages of the PCA pipeline (I/O, data preprocessing, numerical method). Evaluated on datasets reaching up to 11 TB, DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** and preserving the accuracy of the recovered principal components (PCs). For a detailed description of the framework and experimental evaluation, please refer to our [preprint](https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1).
 
 ## Table of Contents
 - [Prerequisites & Installation](#prerequisites--installation)
@@ -132,7 +132,7 @@ mpirun -np <num_processes> ./build/DistPCA.exe \
 | `-fullSVD` | Boolean flag. If set to `1`, computes full SVD using `LAPACKE` (only if dataset fits in RAM) (Default: `0`) |
 
 > [!NOTE]
-> `DistPCA` supports three convergence criteria. The first is the trace-based criterion, which monitors the relative change of the total explained variance (trace) between successive iterations. The second is the individual eigenvalue criterion, which checks the relative change of each singular value and requires all components to satisfy the specified tolerance. The third is the Mean Explained Variance (MEV) criterion, which assesses subspace convergence by measuring the average squared cosine similarity between successive eigenvector estimates. By default, the MEV criterion is used.
+> `DistPCA` supports three convergence criteria. The first is the trace-based criterion, which monitors the relative change of the total explained variance (trace) between successive iterations. The second is the individual eigenvalue criterion, which checks the relative change of each singular value and requires all components to satisfy the specified tolerance. The third is the mean explained variance (MEV) criterion, which assesses subspace convergence by measuring the average squared cosine similarity between successive eigenvector estimates. By default, the MEV criterion is used.
 
 > [!NOTE]
 > `DistPCA` supports three MPI-based parallelism schemes for computing the sought PCs. The first scheme, implemented in [SubspaceIteration_MPI](https://github.com/CEID-HPCLAB/DistPCA/blob/main/src/methods.cpp#L26), is an in-core method used when each MPI process can fully load its assigned portion of the dataset into RAM. The second scheme supports out-of-core computation of PCs and uses three levels of parallelism (multiprocessing, OpenMP multithreading, and SIMD vectorization). It is accessible through [BlockSubspaceIter_MPI_OOC](https://github.com/CEID-HPCLAB/DistPCA/blob/main/src/methods.cpp#L331). The third scheme is the full DistPCA implementation presented in the paper and extends the second scheme by additionally supporting compute–transfer overlap using a double-buffering strategy. It is implemented in [BlockSubspaceIter_MPI_OOC_double_buffering](https://github.com/CEID-HPCLAB/DistPCA/blob/main/src/methods.cpp#L760).
@@ -345,12 +345,17 @@ These performance gains are achieved while preserving the accuracy of the recove
 
 <p align="center">
   <picture>
-    <source srcset = "docs/figures/Fig3_light.png" media = "(prefers-color-scheme: dark)">
-    <source srcset = "docs/figures/Fig3.png" media = "(prefers-color-scheme: light)">
-    <img src = "docs/figures/Fig3_light.png" width = "90%" alt = "Strong scaling speedup (left) and parallel efficiency (right)">
+    <source srcset="docs/figures/Fig3_light.png" media="(prefers-color-scheme: dark)">
+    <source srcset="docs/figures/Fig3.png" media="(prefers-color-scheme: light)">
+    <img src="docs/figures/Fig3_light.png" width="98%" alt="Entry-wise relative error, population structure, and MEV evaluation">
   </picture>
   <br>
-  <em>Figure 3<br><b>Left</b>: Entry-wise relative error of the 10 leading eigenvectors computed by DistPCA for the <b>1000 Genomes</b> dataset, compared to the eigenvectors returned by the full-rank SVD<br><b>Right</b>: Projection of the samples of the <b>1000 Genomes</b> dataset on the top two left singular vectors, as computed by DistPCA. Samples are grouped into five populations: AFR (African), AMR (Ad Mixed American), EAS (East Asian), EUR (European), and SAS (South Asian)</em>
+  <em>
+    Figure 3<br>
+    <b>Left</b>: Entry-wise relative error of the 10 leading eigenvectors computed by DistPCA for the <b>1000 Genomes</b> dataset, compared to the eigenvectors returned by the full-rank SVD<br>
+    <b>Center</b>: Projection of the samples of the <b>1000 Genomes</b> dataset on the top two left singular vectors, as computed by DistPCA. Samples are grouped into five populations: AFR (African), AMR (Ad Mixed American), EAS (East Asian), EUR (European), and SAS (South Asian)<br>
+    <b>Right</b>: MEV between the <i>k</i> leading PCs estimated by DistPCA and those obtained by PCAone for increasing values of <i>k</i> on the <b>500K</b> and <b>1M Genomes</b> datasets
+  </em>
 </p>
 
 ### Comparison with PCAone
