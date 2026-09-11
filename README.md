@@ -322,7 +322,7 @@ DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2
   <picture>
     <source srcset = "docs/figures/Fig1_light.png" media = "(prefers-color-scheme: dark)">
     <source srcset = "docs/figures/Fig1.png" media = "(prefers-color-scheme: light)">
-    <img src = "docs/figures/Fig1_light.png" width = "95%" alt = "Runtime Performance of DistPCA across four distinct datasets">
+    <img src = "docs/figures/Fig1_light.png" width = "98%" alt = "Runtime Performance of DistPCA across four distinct datasets">
   </picture>
   <br>
   <em>Figure 1: Runtime performance on the <a href="https://www.hpc.grnet.gr/en/">ARIS supercomputer</a></em>
@@ -333,7 +333,7 @@ DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2
   <picture>
     <source srcset = "docs/figures/Fig2_light.png" media = "(prefers-color-scheme: dark)">
     <source srcset = "docs/figures/Fig2.png" media = "(prefers-color-scheme: light)">
-    <img src = "docs/figures/Fig2_light.png" width = "90%" alt = "Strong scaling speedup (left) and parallel efficiency (right)">
+    <img src = "docs/figures/Fig2_light.png" width = "94%" alt = "Strong scaling speedup (left) and parallel efficiency (right)">
   </picture>
   <br>
   <em>Figure 2: Strong scaling speedup (left) and parallel efficiency (right) on the <a href="https://www.hpc.grnet.gr/en/">ARIS supercomputer</a></em>
@@ -354,7 +354,7 @@ These performance gains are achieved while preserving the accuracy of the recove
     Figure 3<br>
     <b>Left</b>: Entry-wise relative error of the 10 leading eigenvectors computed by DistPCA for the <b>1000 Genomes</b> dataset, compared to the eigenvectors returned by the full-rank SVD<br>
     <b>Center</b>: Projection of the samples of the <b>1000 Genomes</b> dataset on the top two left singular vectors, as computed by DistPCA. Samples are grouped into five populations: AFR (African), AMR (Ad Mixed American), EAS (East Asian), EUR (European), and SAS (South Asian)<br>
-    <b>Right</b>: MEV between the <i>k</i> leading PCs estimated by DistPCA and those obtained by PCAone for increasing values of <i>k</i> on the <b>500K</b> and <b>1M Genomes</b> datasets
+    <b>Right</b>: MEV between the <i>k</i>-leading PCs estimated by DistPCA and those obtained by PCAone for increasing values of <i>k</i> on the <b>500K</b> and <b>1M Genomes</b> datasets
   </em>
 </p>
 
