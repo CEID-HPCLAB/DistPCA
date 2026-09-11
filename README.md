@@ -26,6 +26,7 @@
 - [Performance Evaluation](#performance-evaluation)
   - [Experimental Setup](#experimental-setup)
   - [Scalability](#scalability)
+  - [Accuracy](#accuracy)
   - [Comparison with PCAone](#comparison-with-pcaone)
 - [Reproducibility](#reproducibility)
   - [Figures](#regenerating-the-figures)
@@ -46,7 +47,7 @@ cd DistPCA
 
 Before building the project, ensure that the following prerequisites are installed:
 
-1. A GCC or Clang compiler with C++11 support
+1. A GCC or Clang compiler with **C++11** support
 2. GNU Make
 
 > [!IMPORTANT]
@@ -124,7 +125,7 @@ mpirun -np <num_processes> ./build/DistPCA.exe \
 | `-power` | Number of power iterations to perform (Default: `1`) |
 | `-crit` | Convergence criterion (Default: `2`) |
 | `-tol` | Convergence tolerance (Default: `1e-3`) |
-| `-bsize` | Total number of SNPs per block (Default: `100`) |
+| `-bsize` | Total number of single nucleotide polymorphisms (SNPs) per block (Default: `100`) |
 | `-miter` | Maximum iterations to run if convergence criterion is taking longer to achieve (Default: `100`) |
 | `-verbose` | Logging level. If set to `2`, detailed convergence info is printed (Default: `1`) |
 | `-fwrite` | Boolean flag. If set to `1`, stores the singular values and singular vectors (Default: `0`) |
@@ -335,9 +336,10 @@ DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2
     <img src = "docs/figures/Fig2_light.png" width = "90%" alt = "Strong scaling speedup (left) and parallel efficiency (right)">
   </picture>
   <br>
-  <em>Figure 2: Strong scaling speedup (left) and parallel efficiency (right)</em>
+  <em>Figure 2: Strong scaling speedup (left) and parallel efficiency (right) on the <a href="https://www.hpc.grnet.gr/en/">ARIS supercomputer</a></em>
 </p>
 
+### Accuracy
 
 These performance gains are achieved while preserving the accuracy of the recovered PCs, as illustrated in the following figures.
 
@@ -348,7 +350,7 @@ These performance gains are achieved while preserving the accuracy of the recove
     <img src = "docs/figures/Fig3_light.png" width = "90%" alt = "Strong scaling speedup (left) and parallel efficiency (right)">
   </picture>
   <br>
-  <em>Figure 3<br><b>Left</b>: Entry-wise relative error of the 10 leading eigenvectors computed by DistPCA for the <b>1000 Genomes</b> dataset, compared to the eigenvectors returned by the full-rank SVD<br><b>Right</b>: Projection of the samples of the <b>1000 Genomes</b> dataset on the top two left singular vectors, as computed by DistPCA. Samples are grouped into five populations: AFR, AMR, EAS, EUR, and SAS</em>
+  <em>Figure 3<br><b>Left</b>: Entry-wise relative error of the 10 leading eigenvectors computed by DistPCA for the <b>1000 Genomes</b> dataset, compared to the eigenvectors returned by the full-rank SVD<br><b>Right</b>: Projection of the samples of the <b>1000 Genomes</b> dataset on the top two left singular vectors, as computed by DistPCA. Samples are grouped into five populations: AFR (African), AMR (Ad Mixed American), EAS (East Asian), EUR (European), and SAS (South Asian)</em>
 </p>
 
 ### Comparison with PCAone
@@ -380,9 +382,13 @@ pip install -r requirements.txt
 python3 runtime.py          # Runtime performance (Figure 3 in the paper)
 python3 speedup.py          # Strong scaling speedup (Figure 4 in the paper)
 python3 par_efficiency.py   # Parallel efficiency
-python3 rel_error.py        # Entry-wise relative error of eigenvectors (Figure 5 in the paper)
-python3 pop_structure.py    # Population structure (PC1 vs PC2) (Figure 6 in the paper)
+python3 rel_error.py        # Entry-wise relative error of eigenvectors (Figure 6 in the paper)
+python3 pop_structure.py    # Population structure (PC1 vs PC2) (Figure 7 in the paper)
+python3 mev.py              # MEV of DistPCA compared to PCAone (Figure 8 in the paper)
 ``` 
+
+> [!IMPORTANT]
+> The estimated PC results from DistPCA and PCAone used for the MEV analysis (Figure 8 of the paper) are too large to be stored on GitHub and are therefore hosted on Google Drive. To this end, the [mev.py](./scripts/plots/mev.py) script automatically downloads the required results to `docs/results/accuracy/mev/` and generates Figure 8.
 
 ### Reproducing the Reported Results
 
@@ -420,7 +426,7 @@ bash run_1000G_accuracy.sh
 > [!NOTE]
 > After executing the above script, the eigenvalues and corresponding eigenvectors computed by DistPCA will be stored in the `docs/results/accuracy/` directory in separate `.txt` files. For reference, eigenvalues and eigenvectors computed via full SVD using *LAPACKE* are also stored in the same directory in a separate file.
 >
-> By running the corresponding Python plotting scripts located under `scripts/plots/` ([rel_error.py](./scripts/plots/rel_error.py), [pop_structure.py](./scripts/plots/pop_structure.py)), Figures 5 and 6 of the paper can be generated.
+> By running the corresponding Python plotting scripts located under `scripts/plots/` ([rel_error.py](./scripts/plots/rel_error.py), [pop_structure.py](./scripts/plots/pop_structure.py)), Figures 6 and 7 of the paper can be generated.
 
 > [!CAUTION]
 > The execution of `run_1000G_accuracy.sh` includes the in-core computation of PCs via full SVD, which requires the entire dataset to be loaded into main memory in uncompressed form. For computing the PCs using LAPACKE's [dgesvd](https://netlib.org/lapack/explore-html//d1/d7f/group__gesvd_gac6bd5d4e645049e49bb70691180abf07.html), at least 105 GB of available RAM is required.
@@ -466,7 +472,7 @@ DistPCA/
 │   ├── figures/            # Generated figures for the paper
 │   └── results/            # Precomputed experimental results
 │       ├── runtime/        # Runtime performance results (Figures 3 and 4 of the paper)
-│       └── accuracy/       # Evaluation results for computed PCs (Figures 5 and 6 of the paper)
+│       └── accuracy/       # Evaluation results for computed PCs (Figures 6 and 7 of the paper)
 │
 ├── scripts/
 │   ├── data/               # Scripts for downloading and preprocessing real-world datasets
