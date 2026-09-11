@@ -1,10 +1,11 @@
 # 🧬 DistPCA: Tera-Scale Genomic PCA via Out-of-Core Distributed Parallelism
 
 [![Linux CI](https://github.com/CEID-HPCLAB/DistPCA/actions/workflows/linux.yml/badge.svg)](https://github.com/CEID-HPCLAB/DistPCA/actions/workflows/linux.yml)
+[![License](https://img.shields.io/badge/License-MIT-FFDEAD)](https://opensource.org/licenses/MIT) 
 <br>
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20392866.svg)](https://doi.org/10.5281/zenodo.20392866)
 [![Release](https://img.shields.io/github/v/release/CEID-HPCLAB/DistPCA?color=orange)](https://github.com/CEID-HPCLAB/DistPCA/releases/tag/v1.0.0)
-[![License](https://img.shields.io/badge/License-MIT-FFDEAD)](https://opensource.org/licenses/MIT)  <br>
+[![bioRxiv](https://img.shields.io/badge/bioRxiv-2607.16478-b31b1b.svg)](https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1.full)  <br>
 ![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=flat&logo=c%2B%2B&logoColor=white)
 ![HPC](https://img.shields.io/badge/HPC-71797E?style=flat&logo=dna&logoColor=white)
 ![Distributed Computing](https://img.shields.io/badge/Distributed%20Computing-E91E8C?style=flat&logo=apachehadoop&logoColor=white)
