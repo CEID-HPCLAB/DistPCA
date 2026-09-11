@@ -1,10 +1,19 @@
 import os
+import gdown
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-
+DRIVE_URL = "https://drive.google.com/drive/folders/1FATyewsgDSeSHo10kqfXkh2qxlurDmEo?usp=sharing"
 BASE_PATH = "../../docs/results/accuracy/mev"
+
+def download_res():
+    if os.path.exists(BASE_PATH) and os.listdir(BASE_PATH):
+        print(f"MEV results already available in: {BASE_PATH}")
+        return
+        
+    print("Downloading MEV results from Google Drive...")
+    gdown.download_folder(url = DRIVE_URL, output = BASE_PATH, quiet = False, use_cookies = False,)
 
 def load_pcaone(path, k):
     df = pd.read_csv(path, sep = r"\s+")
@@ -52,6 +61,8 @@ plt.rcParams['legend.fontsize'] = 12
 plt.rcParams['text.color'] = 'white'; plt.rcParams['axes.labelcolor'] = 'white'; plt.rcParams['xtick.color'] = 'white'; plt.rcParams['ytick.color'] = 'white'
 
 # plt.rcParams['text.color'] = 'black'; plt.rcParams['axes.labelcolor'] = 'black'; plt.rcParams['xtick.color'] = 'black'; plt.rcParams['ytick.color'] = 'black'
+
+download_res()
 
 results = []
 
