@@ -1,5 +1,7 @@
 # 🧬 DistPCA: Tera-Scale Genomic PCA via Out-of-Core Distributed Parallelism
 
+[![Linux CI](https://github.com/CEID-HPCLAB/DistPCA/actions/workflows/linux.yml/badge.svg)](https://github.com/CEID-HPCLAB/DistPCA/actions/workflows/linux.yml)
+<br>
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20392866.svg)](https://doi.org/10.5281/zenodo.20392866)
 [![Release](https://img.shields.io/github/v/release/CEID-HPCLAB/DistPCA?color=orange)](https://github.com/CEID-HPCLAB/DistPCA/releases/tag/v1.0.0)
 [![License](https://img.shields.io/badge/License-MIT-FFDEAD)](https://opensource.org/licenses/MIT)  <br>
