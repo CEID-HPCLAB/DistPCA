@@ -1,0 +1,32 @@
+name: macOS (arm64)
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'README.md'
+      - 'docs/**'
+      - 'example/**'
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  macos-arm64:
+    name: macOS arm64
+    runs-on: macos-14
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: sys-deps
+        run: |
+          brew install open-mpi openblas libomp
+
+      - name: build
+        shell: bash
+        run: |
+          make
