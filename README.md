@@ -495,7 +495,7 @@ DistPCA/
 
 - [X] Improve the API documentation
 - [ ] Provide a Python API
-- [ ] Support additional genetic data formats (e.g., PLINK2 binary fileset)
+- [ ] Support additional genetic data formats (e.g., PLINK 2 binary fileset)
 - [ ] Integrate multi-GPU support
 - [ ] Support alternative out-of-core methods for PCs approximation
 
