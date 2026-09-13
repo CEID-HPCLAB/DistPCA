@@ -36,6 +36,7 @@
 - [Planned Features](#planned-features)
 - [Citation](#citation)
 - [Acknowledgments](#acknowledgments)
+- [References](#references)
 
 ## Prerequisites & Installation
 
@@ -293,7 +294,7 @@ rm -f output_file.{log,map,nosex,ped}
 
 ## Performance Evaluation
 
-The performance of DistPCA was evaluated on **three** synthetic datasets and **three** publicly available real-world datasets of varying sizes, as described in Section [Datasets](#datasets). Throughout all experiments, the underlying Randomized Subspace Iteration (RSI) method targets the leading $k \coloneqq 20$ PCs, starting from an initial approximation subspace of dimension $2k$, with a fixed block size of **100** SNPs. Convergence is determined via the mean explained variance (**MEV**) of eigenvectors, a metric for evaluating the quality of estimated PCs, and the RSI algorithm stops when the difference of eigenvectors between two successive iterations falls below a threshold of $10^{-3}$ ($1-\mathrm{MEV}<10^{-3}$).   
+The performance of DistPCA was evaluated on **three** synthetic datasets and **three** publicly available real-world datasets of varying sizes, as described in Section [Datasets](#datasets). Throughout all experiments, the underlying Randomized Subspace Iteration (RSI) method targets the leading $k \coloneqq 20$ PCs, starting from an initial approximation subspace of dimension $2k$, with a fixed block size of **100** SNPs. Convergence is determined via the **MEV** of eigenvectors, a metric for evaluating the quality of estimated PCs, and the RSI algorithm stops when the difference of eigenvectors between two successive iterations falls below a threshold of $10^{-3}$ ($1-\mathrm{MEV}<10^{-3}$).   
 
 ### Experimental Setup
 
@@ -516,3 +517,7 @@ If you find DistPCA useful for your research, please cite:
 
 ## Acknowledgments
 This work was supported by computational time granted from the National Infrastructures for Research and Technology S.A. (GRNET S.A.) in the National HPC facility - ARIS - under project ID pa260203distpca.
+
+## References
+[1] Z. Li, J. Meisner, and A. Albrechtsen. [Fast and accurate out-of-core PCA framework for large scale biobank data](https://genome.cshlp.org/content/early/2023/10/05/gr277525122). *Genome Research*, 33(9):1599–608, Sept. 2023. <br>
+[2] Z. Li. [Principal Component Analysis All in One (v0.7.2)](https://github.com/Zilong-Li/PCAone) [GitHub Repository].
