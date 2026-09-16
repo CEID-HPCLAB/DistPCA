@@ -323,7 +323,7 @@ DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2
   <picture>
     <source srcset = "docs/figures/Fig1_light.png" media = "(prefers-color-scheme: dark)">
     <source srcset = "docs/figures/Fig1.png" media = "(prefers-color-scheme: light)">
-    <img src = "docs/figures/Fig1_light.png" width = "98%" alt = "Runtime Performance of DistPCA across four distinct datasets">
+    <img src = "docs/figures/Fig1_light.png" width = "98%" alt = "Runtime Performance of DistPCA on the ARIS supercomputer across four distinct datasets">
   </picture>
   <br>
   <em>Figure 1: Runtime performance on the <a href="https://www.hpc.grnet.gr/en/">ARIS supercomputer</a></em>
@@ -340,19 +340,30 @@ DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2
   <em>Figure 2: Strong scaling speedup (left) and parallel efficiency (right) on the <a href="https://www.hpc.grnet.gr/en/">ARIS supercomputer</a></em>
 </p>
 
+<br>
+<p align="center">
+  <picture>
+    <source srcset = "docs/figures/Fig3_light.png" media = "(prefers-color-scheme: dark)">
+    <source srcset = "docs/figures/Fig3.png" media = "(prefers-color-scheme: light)">
+    <img src = "docs/figures/Fig3_light.png" width = "64%" alt = "Runtime Performance of DistPCA on the ATHENA server across two distinct datasets">
+  </picture>
+  <br>
+  <em>Figure 3: Runtime performance on the ATHENA server</em>
+</p>
+
 ### Accuracy
 
 These performance gains are achieved while preserving the accuracy of the recovered PCs, as illustrated in the following figures.
 
 <p align="center">
   <picture>
-    <source srcset="docs/figures/Fig3_light.png" media="(prefers-color-scheme: dark)">
-    <source srcset="docs/figures/Fig3.png" media="(prefers-color-scheme: light)">
-    <img src="docs/figures/Fig3_light.png" width="98%" alt="Entry-wise relative error, population structure, and MEV evaluation">
+    <source srcset="docs/figures/Fig4_light.png" media="(prefers-color-scheme: dark)">
+    <source srcset="docs/figures/Fig4.png" media="(prefers-color-scheme: light)">
+    <img src="docs/figures/Fig4_light.png" width="98%" alt="Entry-wise relative error, population structure, and MEV evaluation">
   </picture>
   <br>
   <em>
-    Figure 3<br>
+    Figure 4<br>
     <b>Left</b>: Entry-wise relative error of the 10 leading eigenvectors computed by DistPCA for the <b>1000 Genomes</b> dataset, compared to the eigenvectors returned by the full-rank SVD<br>
     <b>Center</b>: Projection of the samples of the <b>1000 Genomes</b> dataset on the top two left singular vectors, as computed by DistPCA. Samples are grouped into five populations: AFR (African), AMR (Ad Mixed American), EAS (East Asian), EUR (European), and SAS (South Asian)<br>
     <b>Right</b>: MEV between the <i>k</i>-leading PCs estimated by DistPCA and those obtained by PCAone for increasing values of <i>k</i> on the <b>500K</b> and <b>1M Genomes</b> datasets
@@ -385,8 +396,9 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-python3 runtime.py          # Runtime performance (Figure 3 in the paper)
+python3 runtime.py          # Runtime performance on the ARIS supercomputer (Figure 3 in the paper)
 python3 speedup.py          # Strong scaling speedup (Figure 4 in the paper)
+python3 runtime2.py         # Runtime performance on the ATHENA server (Figure 5 in the paper)
 python3 par_efficiency.py   # Parallel efficiency
 python3 rel_error.py        # Entry-wise relative error of eigenvectors (Figure 6 in the paper)
 python3 pop_structure.py    # Population structure (PC1 vs PC2) (Figure 7 in the paper)
@@ -477,7 +489,9 @@ DistPCA/
 ├── docs/
 │   ├── figures/            # Generated figures for the paper
 │   └── results/            # Precomputed experimental results
-│       ├── runtime/        # Runtime performance results (Figures 3 and 4 of the paper)
+│       ├── runtime/        # Runtime performance results (Figures 3, 4, and 5 of the paper)
+        │   ├── aris/       # ARIS supercomputer results
+        │   └── athena/     # ATHENA server results
 │       └── accuracy/       # Evaluation results for computed PCs (Figures 6 and 7 of the paper)
 │
 ├── scripts/
