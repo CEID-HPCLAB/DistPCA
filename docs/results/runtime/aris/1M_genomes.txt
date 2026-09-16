@@ -1,0 +1,10 @@
+MPI processes: 1 | Time: 75349.736883 seconds
+MPI processes: 2 | Time: 37689.17871 seconds
+MPI processes: 4 | Time: 18836.35089 seconds
+MPI processes: 8 | Time: 9436.06865 seconds
+MPI processes: 12 | Time: 6295.296339 seconds
+MPI processes: 16 | Time: 4814.640775 seconds
+MPI processes: 24 | Time: 3208.694778 seconds
+MPI processes: 32 | Time: 2396.712454 seconds
+MPI processes: 48 | Time: 1610.854153 seconds
+MPI processes: 64 | Time: 1205.178123 seconds
