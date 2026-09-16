@@ -8,6 +8,8 @@ on:
       - 'README.md'
       - 'docs/**'
       - 'example/**'
+      - 'scripts/plots/**'
+      - 'scripts/data/**'
 
   pull_request:
     branches:
