@@ -130,7 +130,7 @@ mpirun -np <num_processes> ./build/DistPCA.exe \
 | `-miter` | Maximum iterations to run if convergence criterion is taking longer to achieve (Default: `100`) |
 | `-verbose` | Logging level. If set to `2`, detailed convergence info is printed (Default: `1`) |
 | `-fwrite` | Boolean flag. If set to `1`, stores the singular values and singular vectors (Default: `0`) |
-| `-fullSVD` | Boolean flag. If set to `1`, computes full SVD using `LAPACKE` (only if dataset fits in RAM) (Default: `0`) |
+| `-fullSVD` | Boolean flag. If set to `1`, computes full singular value decomposition (SVD) using `LAPACKE` (only if dataset fits in RAM) (Default: `0`) |
 
 > [!NOTE]
 > `DistPCA` supports three convergence criteria. The first is the trace-based criterion, which monitors the relative change of the total explained variance (trace) between successive iterations. The second is the individual eigenvalue criterion, which checks the relative change of each singular value and requires all components to satisfy the specified tolerance. The third is the mean explained variance (MEV) criterion, which assesses subspace convergence by measuring the average squared cosine similarity between successive eigenvector estimates. By default, the MEV criterion is used.
@@ -312,7 +312,7 @@ A detailed overview of the ARIS infrastructure is available [here](https://doc.a
 > MPI ranks were distributed across NUMA domains, with OpenMP threads pinned to cores within each domain and fixed to **8** per rank throughout all experiments. Hyperthreading was disabled and MKL routines were accessed via `Intel oneAPI (v2025.0.1)`.
 
 > [!NOTE]
-> To further evaluate the scalability of DistPCA across different computing environments, additional experiments were conducted on **ATHENA**, a CPU server with two nodes, each equipped with a dual-socket Intel Xeon Gold 6430 CPU (32 cores, 2.1 GHz) and 126 GB of RAM. Unless otherwise specified, the reported results were obtained on the [ARIS supercomputer](https://www.hpc.grnet.gr/en/).
+> To further evaluate the scalability of DistPCA across different computing environments, additional experiments were conducted on **ATHENA**, a CPU server equipped with a dual-socket Intel Xeon Gold 6430 CPU (32 cores, 2.1 GHz) and 128 GB of RAM. Unless otherwise specified, the reported results were obtained on the [ARIS supercomputer](https://www.hpc.grnet.gr/en/).
 
 ### Scalability
 
@@ -345,7 +345,7 @@ DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2
   <picture>
     <source srcset = "docs/figures/Fig3_light.png" media = "(prefers-color-scheme: dark)">
     <source srcset = "docs/figures/Fig3.png" media = "(prefers-color-scheme: light)">
-    <img src = "docs/figures/Fig3_light.png" width = "64%" alt = "Runtime Performance of DistPCA on the ATHENA server across two distinct datasets">
+    <img src = "docs/figures/Fig3_light.png" width = "60%" alt = "Runtime Performance of DistPCA on the ATHENA server across two distinct datasets">
   </picture>
   <br>
   <em>Figure 3: Runtime performance on the ATHENA server</em>
