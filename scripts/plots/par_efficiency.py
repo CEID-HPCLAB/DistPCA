@@ -2,10 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.lines import Line2D
 
-GENOMES_1000_PATH = "../../docs/results/runtime/1000_genomes.txt"
-GENOMES_50K_PATH  = "../../docs/results/runtime/50K_genomes.txt"
-GENOMES_500K_PATH = "../../docs/results/runtime/500K_genomes.txt"
-GENOMES_1M_PATH   = "../../docs/results/runtime/1M_genomes.txt"
+GENOMES_1000_PATH = "../../docs/results/runtime/aris/1000_genomes.txt"
+GENOMES_50K_PATH  = "../../docs/results/runtime/aris/50K_genomes.txt"
+GENOMES_500K_PATH = "../../docs/results/runtime/aris/500K_genomes.txt"
+GENOMES_1M_PATH   = "../../docs/results/runtime/aris/1M_genomes.txt"
 
 def load_dataset(path):
     workers, times = [], []

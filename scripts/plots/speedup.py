@@ -1,11 +1,24 @@
+from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.lines import Line2D
 
-GENOMES_1000_PATH = "../../docs/results/runtime/1000_genomes.txt"
-GENOMES_50K_PATH  = "../../docs/results/runtime/50K_genomes.txt"
-GENOMES_500K_PATH = "../../docs/results/runtime/500K_genomes.txt"
-GENOMES_1M_PATH   = "../../docs/results/runtime/1M_genomes.txt"
+RUNTIME_PATH = Path("../../docs/results/runtime")
+ARIS_PATH = RUNTIME_PATH / "aris"
+
+def find_dataset(filename):
+    for directory in (RUNTIME_PATH, ARIS_PATH):
+        path = directory / filename
+
+        if path.exists():
+            return path
+
+    raise FileNotFoundError(f"{filename} not found")
+
+GENOMES_1000_PATH = find_dataset("1000_genomes.txt")
+GENOMES_50K_PATH  = find_dataset("50K_genomes.txt")
+GENOMES_500K_PATH = find_dataset("500K_genomes.txt")
+GENOMES_1M_PATH   = find_dataset("1M_genomes.txt")
 
 def load_dataset(path):
     workers, times = [], []
