@@ -81,10 +81,12 @@ fig, ax = plt.subplots(figsize = (8.5, 4.5), dpi = 600)
 x = np.arange(1, len(K_VALS) + 1)
 
 for label, color, marker, mev_values in results:
-    ax.plot(x, mev_values, linestyle = "--", marker = marker, markersize = 8.3, linewidth = 2, color = color, label = label)
+    ax.plot(x, mev_values, linestyle = "--", marker = marker, markersize = 9, linewidth = 2.8, color = color, label = label)
 
 ax.set_xticks(x); ax.set_xticklabels([str(k) for k in K_VALS])
 ax.set_xlabel(r"Number of Estimated PCs ($k$)"); ax.set_ylabel("Accuracy (MEV)")
+
+ax.set_ylim(0.9945, 1.00035); ax.set_yticks(np.arange(0.995, 1.001, 0.001))
 
 ax.grid(True, axis = 'both', linestyle = '--', linewidth = 0.62, alpha = 0.55, zorder = 0)
 
@@ -102,5 +104,5 @@ for spine in ax.spines.values():
 ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False)
 
 fig.tight_layout()
-# plt.savefig("mev.pdf", dpi = 600, bbox_inches = "tight", transparent = True)
+plt.savefig("mev.pdf", dpi = 600, bbox_inches = "tight")
 plt.savefig("mev.png", dpi = 600, bbox_inches = "tight", transparent = True)
