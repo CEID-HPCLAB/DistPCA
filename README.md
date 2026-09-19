@@ -2,9 +2,7 @@
 
 [![Linux CI](https://github.com/CEID-HPCLAB/DistPCA/actions/workflows/linux.yml/badge.svg)](https://github.com/CEID-HPCLAB/DistPCA/actions/workflows/linux.yml)
 [![macOS CI](https://github.com/CEID-HPCLAB/DistPCA/actions/workflows/mac.yml/badge.svg)](https://github.com/CEID-HPCLAB/DistPCA/actions/workflows/mac.yml)
-[![License](https://img.shields.io/badge/License-MIT-FFDEAD)](https://opensource.org/licenses/MIT) 
-<br>
-<!-- [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20392866.svg)](https://doi.org/10.5281/zenodo.20392866) -->
+[![License](https://img.shields.io/badge/License-MIT-FFDEAD)](https://opensource.org/licenses/MIT) <br>
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20392866.svg)](https://doi.org/10.5281/zenodo.20392865)
 [![Release](https://img.shields.io/github/v/release/CEID-HPCLAB/DistPCA?color=orange)](https://github.com/CEID-HPCLAB/DistPCA/releases/tag/v1.0.0)
 [![bioRxiv](https://img.shields.io/badge/bioRxiv-2607.16478-b31b1b.svg)](https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1.full)  <br>
@@ -313,7 +311,7 @@ A detailed overview of the ARIS infrastructure is available [here](https://doc.a
 > MPI ranks were distributed across NUMA domains, with OpenMP threads pinned to cores within each domain and fixed to **8** per rank throughout all experiments. Hyperthreading was disabled and MKL routines were accessed via `Intel oneAPI (v2025.0.1)`.
 
 > [!NOTE]
-> To further evaluate the scalability of DistPCA across different computing environments, additional experiments were conducted on **ATHENA**, a CPU server equipped with a dual-socket Intel Xeon Gold 6430 CPU (32 cores, 2.1 GHz) and 128 GB of RAM. Unless otherwise specified, the reported results were obtained on the [ARIS supercomputer](https://www.hpc.grnet.gr/en/).
+> To further evaluate the scalability of DistPCA across different computing environments, additional experiments were conducted on **ATHENA**, a CPU server equipped with a dual-socket Intel Xeon Gold 6430 CPU (64 cores, 2.1 GHz) and 128 GB of RAM. Unless otherwise specified, the reported results were obtained on the [ARIS supercomputer](https://www.hpc.grnet.gr/en/).
 
 ### Scalability
 
@@ -351,6 +349,9 @@ DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2
   <br>
   <em>Figure 3: Runtime performance on the ATHENA server</em>
 </p>
+
+> [!IMPORTANT]
+> Across both datasets, execution times on ATHENA are consistently lower than those on ARIS for the same worker configurations. This is primarily due to the different CPU models used by the two systems. We confirmed this through a two-step performance analysis. First, we ran the [Geekbench 7 benchmark suite](https://www.geekbench.com/) on both systems. The Intel Xeon Gold 6430 achieved single-core and multi-core scores of **1978** and **19810**, respectively, compared with **1211** and **18894** for the AMD EPYC 7742. Second, we evaluated the GFLOPS performance of the two CPU models using a well-established [benchmarking tool](https://github.com/Mysticial/Flops) developed by Yee *et al*., focusing on **double-precision fused multiply-add (FMA)** operations. In the single-core configuration, the Intel Xeon Gold 6430 achieved **127.488** GFLOPS with 512-bit AVX-512, compared with **48.96** GFLOPS for the AMD EPYC 7742 with 256-bit FMA3. In the multi-core configuration, the Intel Xeon Gold 6430 achieved **3837.02** GFLOPS, while the AMD EPYC 7742 achieved **4676.54** GFLOPS. Notably, these multi-core measurements use 64 physical cores for the Intel Xeon Gold 6430 and 128 physical cores for the AMD EPYC 7742. Thus, the Intel CPU achieves comparable multi-core throughput while using half as many physical cores. These results help explain the lower execution times observed on ATHENA for configurations with **up to 8 MPI ranks**, where each rank uses 8 threads and the total number of cores used is therefore limited to 64, matching the number of physical cores available on ATHENA.
 
 ### Accuracy
 
