@@ -344,10 +344,10 @@ DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2
   <picture>
     <source srcset = "docs/figures/Fig3_light.png" media = "(prefers-color-scheme: dark)">
     <source srcset = "docs/figures/Fig3.png" media = "(prefers-color-scheme: light)">
-    <img src = "docs/figures/Fig3_light.png" width = "60%" alt = "Runtime Performance of DistPCA on the ATHENA server across two distinct datasets">
+    <img src = "docs/figures/Fig3_light.png" width = "100%" alt = "Runtime Performance of DistPCA on the ATHENA server across two distinct datasets">
   </picture>
   <br>
-  <em>Figure 3: Runtime performance on the ATHENA server</em>
+  <em>Figure 3: Runtime performance, strong scaling speedup, and parallel efficiency on the ATHENA server</em>
 </p>
 
 > [!IMPORTANT]
