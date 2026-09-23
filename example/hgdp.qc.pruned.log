@@ -1,0 +1,205 @@
+[Wed Sep 23 11:46:54 2026] Reading .fam file: hgdp.qc.pruned.fam
+
+[Wed Sep 23 11:46:54 2026] Number of individuals (M): 942
+
+[Wed Sep 23 11:46:54 2026] Reading .bim file: hgdp.qc.pruned.bim
+
+[Wed Sep 23 11:46:54 2026] Number of markers (N): 133594
+
+[Wed Sep 23 11:46:54 2026] Number of MPI ranks: 1
+
+[Wed Sep 23 11:46:54 2026] SNPs per rank: ~133594
+
+[Wed Sep 23 11:46:54 2026] Dataset partitioning across MPI ranks:
+
+Rank 0: SNPs [0, 133594) = 133594 SNPs
+
+[Wed Sep 23 11:46:54 2026] Size of RAM (in KB): 263625936
+
+[Wed Sep 23 11:46:54 2026] Memory per rank: 26.3626 GB
+
+[Wed Sep 23 11:46:54 2026] Detected LLC size: 163840 KB (160 MB)
+
+[Wed Sep 23 11:46:54 2026] Block size (SNPs per block): 100
+
+[Wed Sep 23 11:46:54 2026] Estimated memory per rank: 0.00241152 GB (Block buffers: 0.0015072 GB, Auxiliary arrays: 0.00090432 GB)
+
+[Wed Sep 23 11:46:54 2026] Block size (in MB): 0.718689 (typical LLC sizes: 16-64 MB per socket)
+----------------------------------------------------------
+DistPCA software package, Version: 1.0.0
+Current local time and date: Wed Sep 23 11:46:59 2026
+Total number of threads exploited: 2
+RAM size in KBs: 263625936
+RAM size in GBs: 263.625936
+Total number of matrix rows: 942
+Total number of matrix columns: 133594
+Total number of singular pairs sought: 20
+Total number of right-hand sides used: 40
+Value of power: 1
+Total number of rows fetched from the disk per block: 100
+Total number of times which the data matrix was fetched from the memory: 22
+Average amount of time elapsed per matrix fetching: 0.066891
+
+[The following times are listed in seconds]
+
+Time to generate the right-hand sides matrix: 0.0015061441809
+Time to load the data matrix: 1.4715928658843
+Time to perform the MM products (overall): 3.0355518590659
+Time to perform the MM products (with A): 1.6218845807016
+Time to perform the MM products (with A^T): 1.4126811064780
+Time to perform the orthonormalization: 0.0038244612515
+Time to solve the projection eigenvalue problem: 0.0010156054050
+
+Total wall-clock time elapsed: 4.5134909357876
+Total wall-clock time elapsed (without including the amount of time spent on loading the matrix): 3.0418980699033
+
+[The following times are listed in hours]
+
+Time to generate the right-hand sides matrix: 0.0000004183734
+Time to load the data matrix: 0.0004087757961
+Time to perform the MM products (overall): 0.0008432088497
+Time to perform the MM products (with A): 0.0004505234946
+Time to perform the MM products (with A^T): 0.0003924114185
+Time to perform the orthonormalization: 0.0000010623503
+Time to solve the projection eigenvalue problem: 0.0000002821126
+
+Total wall-clock time elapsed: 0.0012537474822
+Total wall-clock time elapsed (without including the time spent on loading the matrix): 0.0008449716861
+[Wed Sep 23 11:47:00 2026] Reading .fam file: hgdp.qc.pruned.fam
+
+[Wed Sep 23 11:47:00 2026] Number of individuals (M): 942
+
+[Wed Sep 23 11:47:00 2026] Reading .bim file: hgdp.qc.pruned.bim
+
+[Wed Sep 23 11:47:00 2026] Number of markers (N): 133594
+
+[Wed Sep 23 11:47:00 2026] Number of MPI ranks: 2
+
+[Wed Sep 23 11:47:00 2026] SNPs per rank: ~66797
+
+[Wed Sep 23 11:47:00 2026] Dataset partitioning across MPI ranks:
+
+Rank 0: SNPs [0, 66797) = 66797 SNPs
+
+[Wed Sep 23 11:47:00 2026] Size of RAM (in KB): 263625936
+
+[Wed Sep 23 11:47:00 2026] Memory per rank: 13.1813 GB
+Rank 1: SNPs [66797, 133594) = 66797 SNPs
+
+[Wed Sep 23 11:47:00 2026] Detected LLC size: 163840 KB (160 MB)
+
+[Wed Sep 23 11:47:00 2026] Block size (SNPs per block): 100
+
+[Wed Sep 23 11:47:00 2026] Estimated memory per rank: 0.00241152 GB (Block buffers: 0.0015072 GB, Auxiliary arrays: 0.00090432 GB)
+
+[Wed Sep 23 11:47:00 2026] Block size (in MB): 0.718689 (typical LLC sizes: 16-64 MB per socket)
+----------------------------------------------------------
+DistPCA software package, Version: 1.0.0
+Current local time and date: Wed Sep 23 11:47:03 2026
+Total number of threads exploited: 2
+RAM size in KBs: 263625936
+RAM size in GBs: 263.625936
+Total number of matrix rows: 942
+Total number of matrix columns: 133594
+Total number of singular pairs sought: 20
+Total number of right-hand sides used: 40
+Value of power: 1
+Total number of rows fetched from the disk per block: 100
+Total number of times which the data matrix was fetched from the memory: 22
+Average amount of time elapsed per matrix fetching: 0.033648
+
+[The following times are listed in seconds]
+
+Time to generate the right-hand sides matrix: 0.0007929187268
+Time to load the data matrix: 0.7402496263385
+Time to perform the MM products (overall): 1.5209669061005
+Time to perform the MM products (with A): 0.8108249139041
+Time to perform the MM products (with A^T): 0.7050314042717
+Time to perform the orthonormalization: 0.0037664063275
+Time to solve the projection eigenvalue problem: 0.0010087508708
+
+Total wall-clock time elapsed: 2.2667846083641
+Total wall-clock time elapsed (without including the amount of time spent on loading the matrix): 1.5265349820256
+
+[The following times are listed in hours]
+
+Time to generate the right-hand sides matrix: 0.0000002202552
+Time to load the data matrix: 0.0002056248962
+Time to perform the MM products (overall): 0.0004224908073
+Time to perform the MM products (with A): 0.0002252291428
+Time to perform the MM products (with A^T): 0.0001958420567
+Time to perform the orthonormalization: 0.0000010462240
+Time to solve the projection eigenvalue problem: 0.0000002802086
+
+Total wall-clock time elapsed: 0.0006296623912
+Total wall-clock time elapsed (without including the time spent on loading the matrix): 0.0004240374950
+[Wed Sep 23 11:47:03 2026] Reading .fam file: hgdp.qc.pruned.fam
+
+[Wed Sep 23 11:47:03 2026] Number of individuals (M): 942
+
+[Wed Sep 23 11:47:03 2026] Reading .bim file: hgdp.qc.pruned.bim
+
+[Wed Sep 23 11:47:03 2026] Number of markers (N): 133594
+
+[Wed Sep 23 11:47:03 2026] Number of MPI ranks: 4
+
+[Wed Sep 23 11:47:03 2026] SNPs per rank: ~33398
+
+[Wed Sep 23 11:47:03 2026] Dataset partitioning across MPI ranks:
+
+Rank 0: SNPs [0, 33399) = 33399 SNPs
+Rank 1: SNPs [33399, 66798) = 33399 SNPs
+Rank 2: SNPs [66798, 100196) = 33398 SNPs
+Rank 3: SNPs [100196, 133594) = 33398 SNPs
+
+[Wed Sep 23 11:47:03 2026] Size of RAM (in KB): 263625936
+
+[Wed Sep 23 11:47:03 2026] Memory per rank: 6.59065 GB
+
+[Wed Sep 23 11:47:03 2026] Detected LLC size: 163840 KB (160 MB)
+
+[Wed Sep 23 11:47:03 2026] Block size (SNPs per block): 100
+
+[Wed Sep 23 11:47:03 2026] Estimated memory per rank: 0.00241152 GB (Block buffers: 0.0015072 GB, Auxiliary arrays: 0.00090432 GB)
+
+[Wed Sep 23 11:47:03 2026] Block size (in MB): 0.718689 (typical LLC sizes: 16-64 MB per socket)
+----------------------------------------------------------
+DistPCA software package, Version: 1.0.0
+Current local time and date: Wed Sep 23 11:47:05 2026
+Total number of threads exploited: 2
+RAM size in KBs: 263625936
+RAM size in GBs: 263.625936
+Total number of matrix rows: 942
+Total number of matrix columns: 133594
+Total number of singular pairs sought: 20
+Total number of right-hand sides used: 40
+Value of power: 1
+Total number of rows fetched from the disk per block: 100
+Total number of times which the data matrix was fetched from the memory: 22
+Average amount of time elapsed per matrix fetching: 0.024719
+
+[The following times are listed in seconds]
+
+Time to generate the right-hand sides matrix: 0.0007951389998
+Time to load the data matrix: 0.5438120737672
+Time to perform the MM products (overall): 1.0472828280181
+Time to perform the MM products (with A): 0.5444126445800
+Time to perform the MM products (with A^T): 0.4964982271194
+Time to perform the orthonormalization: 0.0046620424837
+Time to solve the projection eigenvalue problem: 0.0013694930822
+
+Total wall-clock time elapsed: 1.5979215763509
+Total wall-clock time elapsed (without including the amount of time spent on loading the matrix): 1.0541095025837
+
+[The following times are listed in hours]
+
+Time to generate the right-hand sides matrix: 0.0000002208719
+Time to load the data matrix: 0.0001510589094
+Time to perform the MM products (overall): 0.0002909118967
+Time to perform the MM products (with A): 0.0001512257346
+Time to perform the MM products (with A^T): 0.0001379161742
+Time to perform the orthonormalization: 0.0000012950118
+Time to solve the projection eigenvalue problem: 0.0000003804147
+
+Total wall-clock time elapsed: 0.0004438671045
+Total wall-clock time elapsed (without including the time spent on loading the matrix): 0.0002928081952
