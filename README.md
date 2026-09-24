@@ -160,9 +160,9 @@ The three real-world datasets used in this work are the [1000 Genomes Project](h
 
 | Dataset | Individuals | SNPs | Size (.bed file) |
 |:-------:|:-----------:|:-----:|:-----------------:|
-| 1000 Genomes | 2,490 | 1,664,505 | 989 MB |
-| SGDP | 345 | 694,659 | 58 MB |
-| HGDP | 942 | 133,594 | 31 MB |
+| 1000 Genomes | 2,490 | 1,664,505 | 989 MiB |
+| SGDP | 345 | 694,659 | 58 MiB |
+| HGDP | 942 | 133,594 | 31 MiB |
 
 <br>
 
@@ -255,9 +255,9 @@ The three synthetic datasets used in this work are:
 
 | Dataset | Individuals | SNPs | Size (.bed file) |
 |:-------:|:-----------:|:-----:|:----------------:|
-| 50K Genomes | 50,000 | 6,000,000 | 75 GB |
-| 500K Genomes | 500,000 | 3,000,000 | 350 GB |
-| 1M Genomes | 1,000,000 | 1,000,000 | 233 GB |
+| 50K Genomes | 50,000 | 6,000,000 | 70 GiB |
+| 500K Genomes | 500,000 | 3,000,000 | 350 GiB |
+| 1M Genomes | 1,000,000 | 1,000,000 | 233 GiB |
 <br>
 
 Synthetic datasets can be generated using [DataSimulator](https://github.com/eugeniamaria/DataSimulator). First, install the required dependencies and build:
@@ -379,7 +379,7 @@ As observed from the following table, DistPCA consistently outperforms PCAone [[
 | Dataset        | PCAone | DistPCA | Speedup | Reduction % |
 |:---------------:|:-------:|:--------:|:--------:|:------------:|
 | 1000 Genomes   |  173s  |   **47s** |   3.68x |       72.8% |
-| 50K Genomes    |  9.1h  |  **7.8h** |   1.17x |       14.1% |
+| 50K Genomes    |  9.1h  |  **7.8h** |   1.17x |       14.3% |
 | 500K Genomes   | 12.1h  |  **2.3h** |   5.26x |       81% |
 | 1M Genomes     |  7.9h  |  **2.6h** |   3.04x |       67.1% |
 
@@ -549,7 +549,9 @@ If you find DistPCA useful for your research, please cite:
 ```
 
 ## Acknowledgments
-This work was supported by computational time granted from the National Infrastructures for Research and Technology S.A. (GRNET S.A.) in the National HPC facility - ARIS - under project ID pa260203distpca.
+This research was supported by the [easyHPC@eco.plastics.industry](https://www.linkedin.com/showcase/easyhpc/about/) [6001593], which is co-funded by the European Union under the Competitiveness Program (ESPA 2021–2027).
+
+This work was supported by computational time granted from the [National Infrastructures for Research and Technology S.A. (GRNET S.A.)](https://grnet.gr/en/) in the National HPC facility - ARIS - under project ID `pa260203distpca`.
 
 ## References
 [1] Z. Li, J. Meisner, and A. Albrechtsen. [Fast and accurate out-of-core PCA framework for large scale biobank data](https://genome.cshlp.org/content/early/2023/10/05/gr277525122). *Genome Research*, 33(9):1599–608, Sept. 2023. <br>
