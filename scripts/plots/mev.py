@@ -104,5 +104,5 @@ for spine in ax.spines.values():
 ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False)
 
 fig.tight_layout()
-plt.savefig("mev.pdf", dpi = 600, bbox_inches = "tight")
+# plt.savefig("mev.pdf", dpi = 600, bbox_inches = "tight")
 plt.savefig("mev.png", dpi = 600, bbox_inches = "tight", transparent = True)
