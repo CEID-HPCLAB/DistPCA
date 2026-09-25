@@ -18,6 +18,8 @@ total=${#NUM_MPI_RANKS[@]}
 
 LOGFILE="hgdp.qc.pruned.log"
 
+rm -f "$LOGFILE"
+
 PHYSICAL_CORES=$(lscpu -p=SOCKET,CORE | grep -v '^#' | sort -u | wc -l)
 
 for NP in "${NUM_MPI_RANKS[@]}"

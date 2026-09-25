@@ -317,15 +317,21 @@ A detailed overview of the ARIS infrastructure is available [here](https://doc.a
 
 DistPCA demonstrates near-linear scalability, achieving speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** across all evaluated scenarios. As shown in the following figures, the *SGDP* and *HGDP* datasets are omitted, as they complete in under 5 seconds even with 8 MPI ranks.
 
-<br>
-<p align="center">
+<p align = "center">
   <picture>
-    <source srcset = "docs/figures/Fig1_light.png" media = "(prefers-color-scheme: dark)">
-    <source srcset = "docs/figures/Fig1.png" media = "(prefers-color-scheme: light)">
-    <img src = "docs/figures/Fig1_light.png" width = "98%" alt = "Runtime Performance of DistPCA on the ARIS supercomputer across four distinct datasets">
+    <source
+      media = "(prefers-color-scheme: dark)"
+      srcset = "https://raw.githubusercontent.com/CEID-HPCLAB/DistPCA/main/docs/figures/Fig1_light.png">
+    <img
+      src = "https://raw.githubusercontent.com/CEID-HPCLAB/DistPCA/main/docs/figures/Fig1.png"
+      width = "98%"
+      alt = "Runtime Performance of DistPCA on the ARIS supercomputer across four distinct datasets">
   </picture>
   <br>
-  <em>Figure 1: Runtime performance on the <a href="https://www.hpc.grnet.gr/en/">ARIS supercomputer</a></em>
+  <em>
+    Figure 1: Runtime performance on the
+    <a href = "https://www.hpc.grnet.gr/en/">ARIS supercomputer</a>
+  </em>
 </p>
 
 <br>
