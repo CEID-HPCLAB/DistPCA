@@ -2,17 +2,20 @@
 
 [![Linux CI](https://github.com/CEID-HPCLAB/DistPCA/actions/workflows/linux.yml/badge.svg)](https://github.com/CEID-HPCLAB/DistPCA/actions/workflows/linux.yml)
 [![macOS CI](https://github.com/CEID-HPCLAB/DistPCA/actions/workflows/mac.yml/badge.svg)](https://github.com/CEID-HPCLAB/DistPCA/actions/workflows/mac.yml)
-[![License](https://img.shields.io/badge/License-MIT-FFDEAD)](https://opensource.org/licenses/MIT) <br>
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20392866.svg)](https://doi.org/10.5281/zenodo.20392865)
 [![Release](https://img.shields.io/github/v/release/CEID-HPCLAB/DistPCA?color=orange)](https://github.com/CEID-HPCLAB/DistPCA/releases/tag/v1.0.0)
-[![bioRxiv](https://img.shields.io/badge/bioRxiv-2607.16478-b31b1b.svg)](https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1.full)  <br>
+[![License](https://img.shields.io/badge/License-MIT-FFDEAD)](https://opensource.org/licenses/MIT) <br>
+[![Paper DOI](https://img.shields.io/badge/DOI-10.1093%2Fbioadv%2Fvbag303-8B1E2D)](https://doi.org/10.1093/bioadv/vbag303)
+[![Zenodo](https://img.shields.io/badge/Zenodo-10.5281%2Fzenodo.20392865-1682A0)](https://doi.org/10.5281/zenodo.20392865)<br>
 ![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=flat&logo=c%2B%2B&logoColor=white)
 ![HPC](https://img.shields.io/badge/HPC-71797E?style=flat&logo=dna&logoColor=white)
-![Distributed Computing](https://img.shields.io/badge/Distributed%20Computing-E91E8C?style=flat)
+![Distributed Computing](https://img.shields.io/badge/Distributed%20Computing-4C1D95?style=flat)
 ![Bioinformatics](https://img.shields.io/badge/Bioinformatics-228B22?style=flat&logo=dna&logoColor=white)
 
 
-**DistPCA** is a distributed out-of-core C++ framework for tera-scale genomic Principal Component Analysis (PCA), designed to scale efficiently across both single- and multi-node computing environments. Built on top of **Message Passing Interface (MPI)**, it employs a hybrid multi-level parallelism scheme combining **multiprocessing**, **OpenMP multithreading**, **SIMD vectorization**, and **double buffering** across all three stages of the PCA pipeline (I/O, data preprocessing, numerical method). Evaluated on datasets reaching up to 11 TB, DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** and preserving the accuracy of the recovered principal components (PCs). For a detailed description of the framework and experimental evaluation, please refer to our [preprint](https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1).
+**DistPCA** is a distributed out-of-core C++ framework for tera-scale genomic Principal Component Analysis (PCA), designed to scale efficiently across both single- and multi-node computing environments. Built on top of **Message Passing Interface (MPI)**, it employs a hybrid multi-level parallelism scheme combining **multiprocessing**, **OpenMP multithreading**, **SIMD vectorization**, and **double buffering** across all three stages of the PCA pipeline (I/O, data preprocessing, numerical method). Evaluated on datasets reaching up to 11 TB, DistPCA achieves speedups of up to **58.2×** and over **98% reduction in wall-clock time**, while maintaining parallel efficiency above **82%** and preserving the accuracy of the recovered principal components (PCs).
+
+> [!NOTE]
+> For a detailed description of the DistPCA framework and its experimental evaluation, please refer to the [original paper](https://academic.oup.com/bioinformaticsadvances/advance-article/doi/10.1093/bioadv/vbag303/8875720) published in *Bioinformatics Advances*.
 
 ## Table of Contents
 - [Prerequisites & Installation](#prerequisites--installation)
@@ -542,15 +545,14 @@ DistPCA/
 ## Citation
 
 If you find DistPCA useful for your research, please cite:
-
 ```bibtex
-@article{mermigkis2026distpca,
-  title     = {DistPCA: Tera-Scale Genomic PCA via Out-of-Core Distributed Parallelism},
-  author    = {Mermigkis, Georgios and Sofotasios, Argiris and Kontopoulou, Eugenia-Maria and Gallopoulos, Efstratios and Hadjidoukas, Panagiotis},
-  journal   = {bioRxiv},
-  year      = {2026},
-  doi       = {10.64898/2026.05.15.725487},
-  url       = {https://www.biorxiv.org/content/10.64898/2026.05.15.725487v1}
+@article{DistPCA2026,
+    author  = {Mermigkis, Georgios and Sofotasios, Argiris and Kontopoulou, Eugenia-Maria and Gallopoulos, Efstratios and Hadjidoukas, Panagiotis},
+    title   = {DistPCA: Tera-Scale Genomic PCA via Out-of-Core Distributed Parallelism},
+    journal = {Bioinformatics Advances},
+    pages   = {vbag303},
+    year    = {2026},
+    doi     = {10.1093/bioadv/vbag303}
 }
 ```
 
