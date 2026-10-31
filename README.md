@@ -300,7 +300,7 @@ The performance of DistPCA was evaluated on **three** synthetic datasets and **t
 
 ### Experimental Setup
 
-The experiments were conducted on the [ARIS supercomputer](https://www.hpc.grnet.gr/en/), a national Greek HPC cluster facility, using four thin compute nodes. Each thin node is partitioned into eight Non-Uniform Memory Access (NUMA) domains and is configured as follows:
+The experiments were conducted on the [ARIS supercomputer](https://doc25.aris.grnet.gr/), a national Greek HPC cluster facility, using four thin compute nodes. Each thin node is partitioned into eight Non-Uniform Memory Access (NUMA) domains and is configured as follows:
 
 | Component| Details |
 |:---:|:---:|
@@ -308,7 +308,7 @@ The experiments were conducted on the [ARIS supercomputer](https://www.hpc.grnet
 | **RAM** | 512 GB (restricted to 64 GB per node for all experiments) |
 | **Filesystem** | GPFS |
 
-A detailed overview of the ARIS infrastructure is available [here](https://doc.aris.grnet.gr/system/hardware/).
+A detailed overview of the ARIS infrastructure is available [here](https://doc25.aris.grnet.gr/system/hardware/).
 
 > [!NOTE]
 > MPI ranks were distributed across NUMA domains, with OpenMP threads pinned to cores within each domain and fixed to **8** per rank throughout all experiments. Hyperthreading was disabled and MKL routines were accessed via `Intel oneAPI (v2025.0.1)`.
